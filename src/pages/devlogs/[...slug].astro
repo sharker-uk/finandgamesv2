@@ -1,0 +1,43 @@
+---
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('devlogs');
+  return posts.map(entry => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{entry.data.title} | Fin and Games</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1.5rem; line-height: 1.6; background: #0d1117; color: #f0f6fc; }
+    nav a { color: #38bdf8; text-decoration: none; font-weight: 600; }
+    header { margin-bottom: 2rem; border-bottom: 1px solid #30363d; padding-bottom: 1rem; }
+    .meta { color: #8b949e; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <nav><a href="/">← Back to Fin and Games</a></nav>
+  <header>
+    <h1>{entry.data.title}</h1>
+    <div class="meta">
+      <time datetime={entry.data.pubDate.toISOString()}>
+        {entry.data.pubDate.toLocaleDateString('en-GB', { dateStyle: 'long' })}
+      </time>
+    </div>
+  </header>
+  <main>
+    <Content />
+  </main>
+</body>
+</html>

@@ -1,0 +1,71 @@
+---
+import { getCollection } from 'astro:content';
+
+const allDevlogs = await getCollection('devlogs', ({ data }) => !data.draft);
+const latestDevlogs = allDevlogs
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fin and Games | Studio</title>
+  <style>
+    :root { --bg: #0d1117; --surface: #161b22; --surface-border: #30363d; --accent: #38bdf8; --text: #f0f6fc; --text-muted: #8b949e; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+    header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 2rem; border-bottom: 1px solid var(--surface-border); }
+    .brand { font-weight: 700; font-size: 1.25rem; color: var(--text); text-decoration: none; }
+    .brand span { color: var(--accent); }
+    nav a { color: var(--text-muted); text-decoration: none; margin-left: 1rem; }
+    .hero { margin: 3rem 0; }
+    .hero h1 { font-size: 2.25rem; margin-bottom: 0.5rem; }
+    .hero p { color: var(--text-muted); font-size: 1.1rem; }
+    .card { background: var(--surface); border: 1px solid var(--surface-border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .devlog-link { display: block; background: var(--surface); border: 1px solid var(--surface-border); border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 0.75rem; text-decoration: none; color: inherit; }
+    .devlog-link h3 { color: var(--accent); font-size: 1.1rem; }
+    .meta { font-size: 0.85rem; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="/" class="brand">Fin <span>and</span> Games</a>
+    <nav>
+      <a href="#projects">Projects</a>
+      <a href="/devlogs/welcome-to-fin-and-games">Devlogs</a>
+    </nav>
+  </header>
+  <main>
+    <section class="hero">
+      <h1>Building detailed management & simulation games.</h1>
+      <p>Independent studio documenting production openly.</p>
+    </section>
+    <section id="projects">
+      <h2 style="margin-bottom: 1rem;">Projects</h2>
+      <div class="card">
+        <h3 style="font-size: 1.3rem;">Caravan Park Tycoon</h3>
+        <p style="color: var(--text-muted); margin-top: 0.5rem;">
+          British coastal holiday park management simulation built in Godot.
+        </p>
+      </div>
+    </section>
+    <section id="devlogs" style="margin-top: 2.5rem;">
+      <h2 style="margin-bottom: 1rem;">Latest Updates</h2>
+      {latestDevlogs.map((post) => (
+        <a href={`/devlogs/${post.id}`} class="devlog-link">
+          <div class="meta">
+            <time datetime={post.data.pubDate.toISOString()}>
+              {post.data.pubDate.toLocaleDateString('en-GB', { dateStyle: 'medium' })}
+            </time>
+          </div>
+          <h3>{post.data.title}</h3>
+          <p style="color: var(--text-muted); font-size: 0.95rem;">{post.data.description}</p>
+        </a>
+      ))}
+    </section>
+  </main>
+</body>
+</html>

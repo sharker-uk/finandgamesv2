@@ -12,60 +12,350 @@ const latestDevlogs = allDevlogs
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fin and Games | Studio</title>
+  <title>Fin & Games | Independent Simulation Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
   <style>
-    :root { --bg: #0d1117; --surface: #161b22; --surface-border: #30363d; --accent: #38bdf8; --text: #f0f6fc; --text-muted: #8b949e; }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
-    header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 2rem; border-bottom: 1px solid var(--surface-border); }
-    .brand { font-weight: 700; font-size: 1.25rem; color: var(--text); text-decoration: none; }
-    .brand span { color: var(--accent); }
-    nav a { color: var(--text-muted); text-decoration: none; margin-left: 1rem; }
-    .hero { margin: 3rem 0; }
-    .hero h1 { font-size: 2.25rem; margin-bottom: 0.5rem; }
-    .hero p { color: var(--text-muted); font-size: 1.1rem; }
-    .card { background: var(--surface); border: 1px solid var(--surface-border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
-    .devlog-link { display: block; background: var(--surface); border: 1px solid var(--surface-border); border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 0.75rem; text-decoration: none; color: inherit; }
-    .devlog-link h3 { color: var(--accent); font-size: 1.1rem; }
-    .meta { font-size: 0.85rem; color: var(--text-muted); }
+    :root {
+      --bg: #090d16;
+      --bg-surface: #111827;
+      --bg-surface-elevated: #1a2234;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(56, 189, 248, 0.35);
+      --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.15);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --tag-bg: rgba(56, 189, 248, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(56, 189, 248, 0.12), transparent),
+        radial-gradient(circle at 100% 100%, rgba(14, 165, 233, 0.05), transparent 40%);
+      background-repeat: no-repeat;
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem;
+      width: 100%;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .brand-mark {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 12px var(--accent);
+    }
+
+    .brand span {
+      color: var(--accent);
+    }
+
+    nav {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.15s ease;
+    }
+
+    nav a:hover {
+      color: var(--text);
+    }
+
+    /* Hero */
+    .hero {
+      padding: 5rem 0 3.5rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.3rem 0.75rem;
+      background: var(--tag-bg);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 9999px;
+      color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.25rem, 5vw, 3.25rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      max-width: 800px;
+      margin-bottom: 1.25rem;
+    }
+
+    .hero p {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 620px;
+      line-height: 1.7;
+    }
+
+    /* Section Headings */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 1.5rem;
+    }
+
+    h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .section-link {
+      font-size: 0.875rem;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .section-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Project Spotlight Card */
+    .project-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2.25rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      margin-bottom: 4rem;
+    }
+
+    .project-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+
+    .project-status {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: #34d399;
+      background: rgba(52, 211, 153, 0.1);
+      border: 1px solid rgba(52, 211, 153, 0.2);
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      display: inline-block;
+      margin-bottom: 1rem;
+    }
+
+    .project-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+
+    .project-desc {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-width: 680px;
+      margin-bottom: 1.5rem;
+    }
+
+    .tech-stack {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .tech-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    /* Devlog Feed */
+    .devlog-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .devlog-card {
+      display: block;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s ease;
+    }
+
+    .devlog-card:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-surface-elevated);
+      transform: translateX(4px);
+    }
+
+    .devlog-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .devlog-card h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+      transition: color 0.15s ease;
+    }
+
+    .devlog-card:hover h3 {
+      color: var(--accent);
+    }
+
+    .devlog-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: auto;
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
   </style>
 </head>
 <body>
-  <header>
-    <a href="/" class="brand">Fin <span>and</span> Games</a>
-    <nav>
-      <a href="#projects">Projects</a>
-      <a href="/devlogs/welcome-to-fin-and-games">Devlogs</a>
-    </nav>
-  </header>
-  <main>
-    <section class="hero">
-      <h1>Building detailed management & simulation games.</h1>
-      <p>Independent studio documenting production openly.</p>
-    </section>
-    <section id="projects">
-      <h2 style="margin-bottom: 1rem;">Projects</h2>
-      <div class="card">
-        <h3 style="font-size: 1.3rem;">Caravan Park Tycoon</h3>
-        <p style="color: var(--text-muted); margin-top: 0.5rem;">
-          British coastal holiday park management simulation built in Godot.
+  <div class="container">
+    <header>
+      <a href="/" class="brand">
+        <span class="brand-mark"></span>
+        Fin <span>&</span> Games
+      </a>
+      <nav>
+        <a href="#projects">Projects</a>
+        <a href="#devlogs">Devlogs</a>
+        <a href="https://github.com/sharker-uk/finandgamesv2" target="_blank" rel="noreferrer">GitHub</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="badge">INDIE SIMULATION STUDIO</div>
+        <h1>Building deep, thoughtful management systems.</h1>
+        <p>
+          Fin & Games is an independent game studio crafting focused simulation experiences. We believe in mechanics-driven design and documenting the technical journey openly.
         </p>
-      </div>
-    </section>
-    <section id="devlogs" style="margin-top: 2.5rem;">
-      <h2 style="margin-bottom: 1rem;">Latest Updates</h2>
-      {latestDevlogs.map((post) => (
-        <a href={`/devlogs/${post.id}`} class="devlog-link">
-          <div class="meta">
-            <time datetime={post.data.pubDate.toISOString()}>
-              {post.data.pubDate.toLocaleDateString('en-GB', { dateStyle: 'medium' })}
-            </time>
+      </section>
+
+      <section id="projects">
+        <div class="section-header">
+          <h2>Active Projects</h2>
+        </div>
+        <div class="project-card">
+          <span class="project-status">IN ACTIVE DEVELOPMENT</span>
+          <h3 class="project-title">Caravan Park Tycoon</h3>
+          <p class="project-desc">
+            A cozy management simulation inspired by the British coastline. Manage guest satisfaction, layout infrastructure, coordinate staff, and navigate unpredictable seasonal weather.
+          </p>
+          <div class="tech-stack">
+            <span class="tech-tag">Godot 4.x</span>
+            <span class="tech-tag">GDScript</span>
+            <span class="tech-tag">Grid Simulation</span>
+            <span class="tech-tag">PC</span>
           </div>
-          <h3>{post.data.title}</h3>
-          <p style="color: var(--text-muted); font-size: 0.95rem;">{post.data.description}</p>
-        </a>
-      ))}
-    </section>
-  </main>
+        </div>
+      </section>
+
+      <section id="devlogs">
+        <div class="section-header">
+          <h2>Engineering & Design Logs</h2>
+        </div>
+        <div class="devlog-grid">
+          {latestDevlogs.length > 0 ? (
+            latestDevlogs.map((post) => (
+              <a href={`/devlogs/${post.id}`} class="devlog-card">
+                <div class="devlog-meta">
+                  <time datetime={post.data.pubDate.toISOString()}>
+                    {post.data.pubDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  </time>
+                  {post.data.author && <span> • {post.data.author}</span>}
+                </div>
+                <h3>{post.data.title}</h3>
+                <p>{post.data.description}</p>
+              </a>
+            ))
+          ) : (
+            <p style="color: var(--text-muted); font-size: 0.95rem;">No devlogs published yet.</p>
+          )}
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; {new Date().getFullYear()} Fin & Games Studio. Built with Astro & Cloudflare Pages.</p>
+    </footer>
+  </div>
 </body>
 </html>

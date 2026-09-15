@@ -3,7 +3,11 @@ import { getCollection } from 'astro:content';
 import Logo from '../components/Logo.astro';
 const allDevlogs = await getCollection('devlogs', ({ data }) => !data.draft);
 const latestDevlogs = allDevlogs
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .sort((a, b) => {
+    const dateDiff = b.data.pubDate.valueOf() - a.data.pubDate.valueOf();
+    if (dateDiff !== 0) return dateDiff;
+    return b.id.localeCompare(a.id);
+  })
   .slice(0, 3);
 ---
 
@@ -284,7 +288,7 @@ const latestDevlogs = allDevlogs
       <nav>
         <a href="/about">About</a>
         <a href="#projects">Projects</a>
-        <a href="#devlogs">Devlogs</a>
+        <a href="/devlogs">Devlogs</a>
         <a href="https://github.com/sharker-uk/finandgamesv2" target="_blank" rel="noreferrer">GitHub</a>
       </nav>
     </header>
@@ -319,7 +323,8 @@ const latestDevlogs = allDevlogs
 
       <section id="devlogs">
         <div class="section-header">
-          <h2>Engineering & Design Logs</h2>
+          <h2>Engineering &amp; Design Logs</h2>
+          <a href="/devlogs" class="section-link">View all ({allDevlogs.length}) &rarr;</a>
         </div>
         <div class="devlog-grid">
           {latestDevlogs.length > 0 ? (

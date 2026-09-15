@@ -21,9 +21,6 @@ jobs:
           ref: main
           fetch-depth: 1
 
-      - name: Verify script contents on runner
-        run: grep -n "model:" scripts/generate-devlog.mjs
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:

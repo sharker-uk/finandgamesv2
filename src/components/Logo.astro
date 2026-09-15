@@ -1,0 +1,142 @@
+---
+interface Props {
+  className?: string;
+  size?: number;
+  showText?: boolean;
+}
+
+const { className = "", size = 38, showText = true } = Astro.props;
+---
+
+<div class={`logo-container ${className}`}>
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 100 100"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    class="logo-mark"
+  >
+    <defs>
+      <linearGradient id="finGradient" x1="15" y1="85" x2="85" y2="15" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#0284c7" />
+        <stop offset="50%" stop-color="#38bdf8" />
+        <stop offset="100%" stop-color="#0ea5e9" />
+      </linearGradient>
+      <linearGradient id="dpadGradient" x1="30" y1="70" x2="70" y2="30" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#0f172a" />
+        <stop offset="100%" stop-color="#1e293b" />
+      </linearGradient>
+      <filter id="subtleGlow" x="-10%" y="-10%" width="120%" height="120%">
+        <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#38bdf8" flood-opacity="0.3" />
+      </filter>
+    </defs>
+
+    <!-- Water Ripples / Base Arc -->
+    <path
+      d="M10 82 C30 78, 45 86, 65 82 C75 80, 85 82, 92 84"
+      stroke="#38bdf8"
+      stroke-width="4"
+      stroke-linecap="round"
+      opacity="0.6"
+    />
+    <path
+      d="M20 89 C40 85, 55 92, 80 88"
+      stroke="#0284c7"
+      stroke-width="3"
+      stroke-linecap="round"
+      opacity="0.4"
+    />
+
+    <!-- Stylized Shark/Fish Fin Crest -->
+    <path
+      d="M22 78 C25 50, 42 22, 78 16 C68 36, 68 58, 82 78 C65 72, 40 76, 22 78 Z"
+      fill="url(#finGradient)"
+      filter="url(#subtleGlow)"
+    />
+
+    <!-- Cutout / Embedded Game D-Pad Geometry inside the Fin -->
+    <g transform="translate(42, 44) scale(0.72)">
+      <!-- Cross background -->
+      <path
+        d="M-7 -20 H7 V-7 H20 V7 H7 V20 H-7 V7 H-20 V-7 H-7 Z"
+        fill="url(#dpadGradient)"
+        stroke="#ffffff"
+        stroke-width="2.5"
+        stroke-linejoin="round"
+      />
+      <!-- Center Pivot Indicator -->
+      <circle cx="0" cy="0" r="2.5" fill="#38bdf8" />
+      <!-- Directional pip highlights -->
+      <path d="M0 -15 L-3 -11 H3 Z" fill="#94a3b8" />
+      <path d="M0 15 L-3 11 H3 Z" fill="#94a3b8" />
+      <path d="M-15 0 L-11 -3 V3 Z" fill="#94a3b8" />
+      <path d="M15 0 L11 -3 V3 Z" fill="#94a3b8" />
+    </g>
+  </svg>
+
+  {showText && (
+    <div class="logo-text">
+      <span class="brand-fin">FIN</span>
+      <span class="brand-amp">&amp;</span>
+      <span class="brand-games">GAMES</span>
+    </div>
+  )}
+</div>
+
+<style>
+  .logo-container {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    text-decoration: none;
+    user-select: none;
+  }
+
+  .logo-mark {
+    display: block;
+    flex-shrink: 0;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .logo-container:hover .logo-mark {
+    transform: translateY(-2px) rotate(-3deg);
+  }
+
+  .logo-text {
+    display: flex;
+    align-items: baseline;
+    font-family: var(--font-display, ui-sans-serif, system-ui, sans-serif);
+    font-weight: 800;
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  .brand-fin {
+    color: #f8fafc;
+    font-weight: 900;
+  }
+
+  .brand-amp {
+    color: #38bdf8;
+    margin: 0 0.15rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+
+  .brand-games {
+    color: #94a3b8;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  @media (prefers-color-scheme: light) {
+    .brand-fin {
+      color: #0f172a;
+    }
+    .brand-games {
+      color: #475569;
+    }
+  }
+</style>

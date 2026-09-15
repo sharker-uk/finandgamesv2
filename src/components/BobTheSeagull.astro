@@ -1,0 +1,164 @@
+---
+// src/components/BobTheSeagull.astro
+---
+
+<div id="bob-container" class="bob-hidden" aria-hidden="true">
+  <button id="bob-button" type="button" title="It's Bob!" aria-label="Bob the Seagull">
+    <svg viewBox="0 0 64 64" width="48" height="48" fill="none" xmlns="http://www.w3.org/2000/svg" class="bob-svg">
+      <!-- Body / Breast -->
+      <path d="M18 42 C14 34, 18 22, 30 20 C42 18, 50 26, 48 38 C46 48, 30 50, 18 42 Z" fill="#f8fafc"/>
+      <!-- Grey Wing -->
+      <path d="M22 34 C26 28, 38 26, 44 34 C40 42, 28 44, 22 34 Z" fill="#94a3b8"/>
+      <path d="M38 32 L48 40 L36 38 Z" fill="#475569"/>
+      <!-- Head -->
+      <circle cx="24" cy="22" r="8" fill="#f8fafc"/>
+      <!-- Eye -->
+      <circle cx="21" cy="20" r="1.5" fill="#0f172a"/>
+      <!-- Yellow Beak with seaside red spot -->
+      <path d="M17 22 L8 25 L17 27 Z" fill="#f59e0b"/>
+      <circle cx="12" cy="25" r="1" fill="#ef4444"/>
+      <!-- Little Orange Legs -->
+      <path d="M28 46 L28 54 M34 46 L34 54" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
+      <!-- Tiny chip/french fry (optional treat) -->
+      <path id="bob-chip" d="M10 26 L4 30" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" class="bob-chip-hidden"/>
+    </svg>
+    <span class="bob-speech" id="bob-speech">Squawk!</span>
+  </button>
+</div>
+
+<style>
+  #bob-container {
+    position: fixed;
+    z-index: 999;
+    pointer-events: auto;
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+    will-change: transform, opacity;
+  }
+
+  .bob-hidden {
+    display: none;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Perch positions */
+  .perch-bottom-right {
+    bottom: 1.5rem;
+    right: 1.5rem;
+  }
+
+  .perch-bottom-left {
+    bottom: 1.5rem;
+    left: 1.5rem;
+  }
+
+  .perch-top-right {
+    top: 5.5rem;
+    right: 2rem;
+  }
+
+  #bob-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    padding: 0;
+    outline: none;
+  }
+
+  /* Gentle GPU-only bobbing that won't reflow text or eat battery */
+  .bob-svg {
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+    animation: gentle-bob 3.2s ease-in-out infinite;
+    transform-origin: bottom center;
+  }
+
+  @keyframes gentle-bob {
+    0%, 100% {
+      transform: translate3d(0, 0, 0) rotate(0deg);
+    }
+    50% {
+      transform: translate3d(0, -6px, 0) rotate(2deg);
+    }
+  }
+
+  /* Click reaction: takeoff animation */
+  .bob-fly-away {
+    animation: fly-away 0.8s forwards ease-in !important;
+  }
+
+  @keyframes fly-away {
+    0% {
+      transform: translate3d(0, 0, 0) scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: translate3d(80px, -140px, 0) scale(0.4) rotate(-15deg);
+      opacity: 0;
+    }
+  }
+
+  .bob-speech {
+    position: absolute;
+    top: -24px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.8);
+    background: #1e293b;
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .bob-speech.show {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+</style>
+
+<script>
+  function initBob() {
+    const bob = document.getElementById('bob-container');
+    const btn = document.getElementById('bob-button');
+    const speech = document.getElementById('bob-speech');
+    if (!bob || !btn) return;
+
+    // 35% chance to appear on any given page visit
+    const shouldSpawn = Math.random() < 0.35;
+    if (!shouldSpawn) return;
+
+    // Pick a random perch location
+    const perches = ['perch-bottom-right', 'perch-bottom-left', 'perch-top-right'];
+    const selectedPerch = perches[Math.floor(Math.random() * perches.length)];
+    bob.classList.add(selectedPerch);
+    bob.classList.remove('bob-hidden');
+
+    const squawks = ['Squawk!', 'Mine?', 'Chips?', '*rustle*', 'Honk!'];
+
+    btn.addEventListener('click', () => {
+      // Pick a random line
+      if (speech) {
+        speech.textContent = squawks[Math.floor(Math.random() * squawks.length)];
+        speech.classList.add('show');
+      }
+
+      // Fly away after a split second
+      setTimeout(() => {
+        bob.classList.add('bob-fly-away');
+        setTimeout(() => {
+          bob.style.display = 'none';
+        }, 800);
+      }, 350);
+    });
+  }
+
+  // Run on initial load and View Transitions if added later
+  initBob();
+  document.addEventListener('astro:after-swap', initBob);
+</script>

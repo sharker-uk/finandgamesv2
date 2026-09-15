@@ -1,4 +1,5 @@
 ---
+import BobTheSeagull from "../../components/BobTheSeagull.astro";
 import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -273,5 +274,6 @@ const { Content } = await render(post);
       <p>&copy; {new Date().getFullYear()} Fin & Games Studio. Built with Astro & Cloudflare Pages.</p>
     </footer>
   </div>
+  <BobTheSeagull />
 </body>
 </html>

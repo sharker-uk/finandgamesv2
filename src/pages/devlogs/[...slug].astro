@@ -1,5 +1,6 @@
 ---
 import BobTheSeagull from "../../components/BobTheSeagull.astro";
+import Logo from "../../components/Logo.astro";
 import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -20,6 +21,7 @@ const { Content } = await render(post);
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{post.data.title} | Fin & Games Devlog</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -62,7 +64,7 @@ const { Content } = await render(post);
     }
 
     /* Header */
-    header {
+    header.site-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -71,74 +73,58 @@ const { Content } = await render(post);
     }
 
     .brand {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
       text-decoration: none;
-      font-weight: 800;
-      font-size: 1.25rem;
-      letter-spacing: -0.02em;
-      color: var(--text);
     }
-
-    .brand-mark {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 12px var(--accent);
-    }
-
-    .brand span { color: var(--accent); }
 
     .back-link {
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
       color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
       text-decoration: none;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-weight: 500;
-      transition: color 0.15s ease;
+      transition: color 0.15s ease, transform 0.15s ease;
     }
 
-    .back-link:hover { color: var(--accent); }
+    .back-link:hover {
+      color: var(--accent);
+      transform: translateX(-3px);
+    }
 
-    /* Post Header */
+    /* Editorial Post Header */
     .post-header {
-      margin: 3.5rem 0 2.5rem;
+      margin: 3rem 0 2.5rem;
       border-bottom: 1px solid var(--border);
       padding-bottom: 2rem;
     }
 
-    .post-meta {
+    .post-meta-row {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+    }
+
+    .meta-time {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.85rem;
       color: var(--text-muted);
-      margin-bottom: 1rem;
     }
 
-    .post-title {
-      font-size: clamp(2rem, 4vw, 2.75rem);
-      font-weight: 800;
-      line-height: 1.2;
-      letter-spacing: -0.03em;
-      margin-bottom: 1rem;
-    }
-
-    .post-desc {
+    .meta-author {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
       color: var(--text-muted);
-      font-size: 1.15rem;
-      line-height: 1.6;
     }
 
     .tags {
       display: flex;
       gap: 0.5rem;
-      margin-top: 1.25rem;
       flex-wrap: wrap;
     }
 
@@ -152,10 +138,31 @@ const { Content } = await render(post);
       border-radius: 9999px;
     }
 
+    .post-title {
+      font-size: clamp(2rem, 4vw, 2.75rem);
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .post-desc {
+      color: var(--text-muted);
+      font-size: 1.15rem;
+      line-height: 1.6;
+      max-width: 720px;
+    }
+
     /* Markdown Body Typography */
     .markdown-content {
       font-size: 1.05rem;
       color: #cbd5e1;
+    }
+
+    /* Guardrail: ensure markdown content stays vertical */
+    .markdown-content > * {
+      max-width: 100%;
     }
 
     .markdown-content h2 {
@@ -236,32 +243,32 @@ const { Content } = await render(post);
 </head>
 <body>
   <div class="container">
-    <header>
-      <a href="/" class="brand">
-        <span class="brand-mark"></span>
-        Fin <span>&</span> Games
+    <header class="site-header">
+      <a href="/" class="brand" aria-label="Fin & Games Home">
+        <Logo size={36} />
       </a>
-      <a href="/" class="back-link">&larr; Back to Overview</a>
+      <a href="/devlogs" class="back-link">&larr; All Devlogs</a>
     </header>
 
     <main>
       <article>
         <header class="post-header">
-          <div class="post-meta">
-            <time datetime={post.data.pubDate.toISOString()}>
+          <div class="post-meta-row">
+            <time class="meta-time" datetime={post.data.pubDate.toISOString()}>
               {post.data.pubDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
             </time>
-            {post.data.author && <span>• {post.data.author}</span>}
+            {post.data.author && <span class="meta-author">• {post.data.author}</span>}
+            {post.data.tags && post.data.tags.length > 0 && (
+              <div class="tags">
+                {post.data.tags.map((tag: string) => (
+                  <span class="tag">#{tag}</span>
+                ))}
+              </div>
+            )}
           </div>
+
           <h1 class="post-title">{post.data.title}</h1>
           {post.data.description && <p class="post-desc">{post.data.description}</p>}
-          {post.data.tags && post.data.tags.length > 0 && (
-            <div class="tags">
-              {post.data.tags.map((tag: string) => (
-                <span class="tag">#{tag}</span>
-              ))}
-            </div>
-          )}
         </header>
 
         <div class="markdown-content">

@@ -1,0 +1,599 @@
+---
+import Logo from '../components/Logo.astro';
+import BobTheSeagull from '../components/BobTheSeagull.astro';
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NPC Builder | Caravan Park Tycoon</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #090d16;
+      --bg-surface: #111827;
+      --bg-surface-elevated: #1a2234;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(56, 189, 248, 0.35);
+      --accent: #38bdf8;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --tag-bg: rgba(56, 189, 248, 0.1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(56, 189, 248, 0.12), transparent),
+        radial-gradient(circle at 100% 100%, rgba(14, 165, 233, 0.05), transparent 40%);
+      background-repeat: no-repeat;
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem;
+      width: 100%;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand { display: inline-flex; align-items: center; text-decoration: none; }
+
+    nav { display: flex; gap: 1.5rem; }
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.15s ease;
+    }
+    nav a:hover, nav a.active { color: var(--text); }
+
+    .back-nav { margin: 2rem 0 1rem; }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      text-decoration: none;
+    }
+    .back-link:hover { text-decoration: underline; }
+
+    .page-title {
+      font-size: 2.25rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+      color: var(--text-muted);
+      margin-bottom: 2.5rem;
+      max-width: 680px;
+    }
+
+    .builder-layout {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    @media (max-width: 768px) {
+      .builder-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Preview Card */
+    .preview-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .canvas-wrapper {
+      background: #060911;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1.25rem;
+      display: inline-block;
+    }
+
+    #npcCanvas {
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      display: block;
+      width: 192px;
+      height: 192px;
+    }
+
+    .guest-info h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+
+    .guest-info .origin {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+
+    /* Form Controls */
+    .controls-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .form-group input[type="text"],
+    .form-group select {
+      width: 100%;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.6rem 0.75rem;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 0.95rem;
+    }
+
+    .form-group input[type="text"]:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .form-group input[type="color"] {
+      width: 100%;
+      height: 38px;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2px;
+      cursor: pointer;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .actions-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn {
+      padding: 0.6rem 1.1rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #090d16;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+    }
+
+    .btn-secondary {
+      background: var(--bg-surface-elevated);
+      color: var(--text);
+      border-color: var(--border);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--border-hover);
+    }
+
+    /* JSON Output Modal */
+    .json-preview {
+      margin-top: 2rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .json-preview.hidden {
+      display: none;
+    }
+
+    .json-preview h4 {
+      font-size: 1rem;
+      margin-bottom: 0.75rem;
+      color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .json-preview pre {
+      background: #060911;
+      padding: 1rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      overflow-x: auto;
+    }
+
+    .json-preview code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: #38bdf8;
+    }
+
+    footer {
+      margin-top: auto;
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <a href="/" class="brand" aria-label="Fin & Games Home">
+        <Logo size={36} />
+      </a>
+      <nav>
+        <a href="/about">About</a>
+        <a href="/devlogs">Devlogs</a>
+        <a href="/npc-builder" class="active">NPC Builder</a>
+        <a href="/#projects">Projects</a>
+      </nav>
+    </header>
+
+    <div class="back-nav">
+      <a href="/" class="back-link">&larr; Return to Home</a>
+    </div>
+
+    <main>
+      <h1 class="page-title">Park Visitor Paperdoll Builder</h1>
+      <p class="page-subtitle">Configure custom camper sprites and generate the exact JSON manifests ingested into our Godot 4 park simulation.</p>
+
+      <div class="builder-layout">
+        <div class="preview-card">
+          <div class="canvas-wrapper">
+            <canvas id="npcCanvas" width="128" height="128"></canvas>
+          </div>
+          <div class="guest-info">
+            <h3 id="displayGuestName">Uncle Barry</h3>
+            <p class="origin" id="displayGuestOrigin">From: Great Yarmouth</p>
+          </div>
+        </div>
+
+        <div class="controls-card">
+          <form id="npcForm" onsubmit="event.preventDefault();">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="npcName">Camper Name</label>
+                <input type="text" id="npcName" value="Uncle Barry" maxlength="24">
+              </div>
+              <div class="form-group">
+                <label for="npcHometown">Hometown</label>
+                <input type="text" id="npcHometown" value="Great Yarmouth" maxlength="32">
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="skinTone">Skin Tone</label>
+                <select id="skinTone">
+                  <option value="#ffd1b3">Fair</option>
+                  <option value="#dca176">Warm Tan</option>
+                  <option value="#845334">Deep Bronze</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="hairStyle">Hair Style</label>
+                <select id="hairStyle">
+                  <option value="messy">Messy Fringe</option>
+                  <option value="balding">Balding Fringe</option>
+                  <option value="ponytail">Ponytail</option>
+                  <option value="short">Classic Short</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="hairColor">Hair Color</label>
+                <input type="color" id="hairColor" value="#4a3728">
+              </div>
+
+              <div class="form-group">
+                <label for="accessory">Accessory</label>
+                <select id="accessory">
+                  <option value="flatcap">Flat Cap</option>
+                  <option value="buckethat">Bucket Hat</option>
+                  <option value="sunglasses">Sunglasses</option>
+                  <option value="none">None</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="topOutfit">Top Outfit</label>
+                <select id="topOutfit">
+                  <option value="hawaiian">Hawaiian Shirt</option>
+                  <option value="gilet">Fleece Gilet</option>
+                  <option value="raincoat">Yellow Mac</option>
+                  <option value="hoodie">Cozy Hoodie</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="bottomOutfit">Bottoms</label>
+                <select id="bottomOutfit">
+                  <option value="cargo">Cargo Shorts</option>
+                  <option value="jeans">Classic Jeans</option>
+                  <option value="trackie">Tracksuit Bottoms</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="actions-row">
+              <button type="button" id="btnRandom" class="btn btn-secondary">Randomise</button>
+              <button type="button" id="btnExport" class="btn btn-primary">Generate Game JSON Recipe</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div id="jsonModal" class="json-preview hidden">
+        <h4>Godot 4 Ingestion Recipe (`manifest.json`)</h4>
+        <pre><code id="jsonOutput"></code></pre>
+      </div>
+    </main>
+
+    <footer>
+      <p>&copy; {new Date().getFullYear()} Fin &amp; Games Studio. Built with Astro &amp; Cloudflare Pages.</p>
+    </footer>
+  </div>
+  <BobTheSeagull />
+
+  <script>
+    function setupBuilder() {
+      const canvas = document.getElementById("npcCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+
+      const inputName = document.getElementById("npcName");
+      const inputHometown = document.getElementById("npcHometown");
+      const selectSkin = document.getElementById("skinTone");
+      const selectHair = document.getElementById("hairStyle");
+      const inputHairColor = document.getElementById("hairColor");
+      const selectTop = document.getElementById("topOutfit");
+      const selectBottom = document.getElementById("bottomOutfit");
+      const selectAccessory = document.getElementById("accessory");
+
+      const displayName = document.getElementById("displayGuestName");
+      const displayOrigin = document.getElementById("displayGuestOrigin");
+      const jsonBox = document.getElementById("jsonModal");
+      const jsonCode = document.getElementById("jsonOutput");
+
+      ctx.imageSmoothingEnabled = false;
+
+      function renderPaperdoll() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const cx = 64;
+        const cy = 40;
+        const scale = 3;
+
+        // 1. Base Head & Neck
+        ctx.fillStyle = selectSkin.value;
+        ctx.fillRect(cx - 5 * scale, cy, 10 * scale, 10 * scale);
+        ctx.fillRect(cx - 2 * scale, cy + 10 * scale, 4 * scale, 2 * scale);
+
+        // 2. Eyes
+        ctx.fillStyle = "#1b1b1b";
+        ctx.fillRect(cx - 3 * scale, cy + 4 * scale, 1 * scale, 2 * scale);
+        ctx.fillRect(cx + 2 * scale, cy + 4 * scale, 1 * scale, 2 * scale);
+
+        // 3. Bottoms
+        switch (selectBottom.value) {
+          case "jeans":
+            ctx.fillStyle = "#2b5c8f";
+            ctx.fillRect(cx - 4 * scale, cy + 18 * scale, 8 * scale, 8 * scale);
+            break;
+          case "trackie":
+            ctx.fillStyle = "#3a414d";
+            ctx.fillRect(cx - 4 * scale, cy + 18 * scale, 8 * scale, 8 * scale);
+            break;
+          case "cargo":
+          default:
+            ctx.fillStyle = "#8a7a58";
+            ctx.fillRect(cx - 4 * scale, cy + 18 * scale, 8 * scale, 5 * scale);
+            ctx.fillStyle = selectSkin.value;
+            ctx.fillRect(cx - 3 * scale, cy + 23 * scale, 2 * scale, 3 * scale);
+            ctx.fillRect(cx + 1 * scale, cy + 23 * scale, 2 * scale, 3 * scale);
+            break;
+        }
+
+        // Shoes
+        ctx.fillStyle = "#2c221e";
+        ctx.fillRect(cx - 4 * scale, cy + 26 * scale, 3 * scale, 2 * scale);
+        ctx.fillRect(cx + 1 * scale, cy + 26 * scale, 3 * scale, 2 * scale);
+
+        // 4. Tops
+        switch (selectTop.value) {
+          case "hawaiian":
+            ctx.fillStyle = "#d64545";
+            ctx.fillRect(cx - 5 * scale, cy + 12 * scale, 10 * scale, 7 * scale);
+            ctx.fillStyle = "#ffeb3b";
+            ctx.fillRect(cx - 2 * scale, cy + 14 * scale, 1 * scale, 1 * scale);
+            ctx.fillRect(cx + 2 * scale, cy + 16 * scale, 1 * scale, 1 * scale);
+            break;
+          case "gilet":
+            ctx.fillStyle = "#2e4a3d";
+            ctx.fillRect(cx - 5 * scale, cy + 12 * scale, 10 * scale, 7 * scale);
+            ctx.fillStyle = "#d1d5db";
+            ctx.fillRect(cx - 7 * scale, cy + 12 * scale, 2 * scale, 6 * scale);
+            ctx.fillRect(cx + 5 * scale, cy + 12 * scale, 2 * scale, 6 * scale);
+            break;
+          case "raincoat":
+            ctx.fillStyle = "#f5b041";
+            ctx.fillRect(cx - 6 * scale, cy + 12 * scale, 12 * scale, 8 * scale);
+            break;
+          case "hoodie":
+          default:
+            ctx.fillStyle = "#5c6bc0";
+            ctx.fillRect(cx - 6 * scale, cy + 12 * scale, 12 * scale, 7 * scale);
+            break;
+        }
+
+        // 5. Hair
+        ctx.fillStyle = inputHairColor.value;
+        switch (selectHair.value) {
+          case "messy":
+            ctx.fillRect(cx - 6 * scale, cy - 2 * scale, 12 * scale, 4 * scale);
+            ctx.fillRect(cx - 5 * scale, cy + 2 * scale, 3 * scale, 2 * scale);
+            break;
+          case "balding":
+            ctx.fillRect(cx - 6 * scale, cy + 2 * scale, 2 * scale, 4 * scale);
+            ctx.fillRect(cx + 4 * scale, cy + 2 * scale, 2 * scale, 4 * scale);
+            break;
+          case "ponytail":
+            ctx.fillRect(cx - 5 * scale, cy - 1 * scale, 10 * scale, 3 * scale);
+            ctx.fillRect(cx + 5 * scale, cy + 1 * scale, 3 * scale, 6 * scale);
+            break;
+          case "short":
+          default:
+            ctx.fillRect(cx - 5 * scale, cy - 1 * scale, 10 * scale, 3 * scale);
+            break;
+        }
+
+        // 6. Accessories
+        switch (selectAccessory.value) {
+          case "flatcap":
+            ctx.fillStyle = "#4a453e";
+            ctx.fillRect(cx - 7 * scale, cy - 2 * scale, 14 * scale, 3 * scale);
+            ctx.fillRect(cx - 8 * scale, cy + 1 * scale, 16 * scale, 1 * scale);
+            break;
+          case "buckethat":
+            ctx.fillStyle = "#e0e0e0";
+            ctx.fillRect(cx - 6 * scale, cy - 4 * scale, 12 * scale, 4 * scale);
+            ctx.fillRect(cx - 8 * scale, cy, 16 * scale, 2 * scale);
+            break;
+          case "sunglasses":
+            ctx.fillStyle = "#111111";
+            ctx.fillRect(cx - 4 * scale, cy + 4 * scale, 8 * scale, 2 * scale);
+            break;
+          default:
+            break;
+        }
+
+        displayName.textContent = inputName.value || "Anonymous Camper";
+        displayOrigin.textContent = `From: ${inputHometown.value || "Unknown"}`;
+      }
+
+      function exportJson() {
+        const payload = {
+          name: inputName.value,
+          hometown: inputHometown.value,
+          archetype: "camper_custom",
+          style: {
+            skin_hex: selectSkin.value,
+            hair_style: selectHair.value,
+            hair_color: inputHairColor.value,
+            top_id: selectTop.value,
+            bottom_id: selectBottom.value,
+            accessory_id: selectAccessory.value
+          }
+        };
+        jsonCode.textContent = JSON.stringify(payload, null, 2);
+        jsonBox.classList.remove("hidden");
+        jsonBox.scrollIntoView({ behavior: "smooth" });
+      }
+
+      const formInputs = [inputName, inputHometown, selectSkin, selectHair, inputHairColor, selectTop, selectBottom, selectAccessory];
+      formInputs.forEach(input => input && input.addEventListener("input", renderPaperdoll));
+
+      document.getElementById("btnExport")?.addEventListener("click", exportJson);
+
+      document.getElementById("btnRandom")?.addEventListener("click", () => {
+        const names = ["Uncle Barry", "Auntie Brenda", "Dave from Leeds", "Nigel", "Gemma", "Kev"];
+        const towns = ["Great Yarmouth", "Cromer", "Norwich", "Hunstanton", "Lowestoft"];
+        
+        inputName.value = names[Math.floor(Math.random() * names.length)];
+        inputHometown.value = towns[Math.floor(Math.random() * towns.length)];
+        selectSkin.selectedIndex = Math.floor(Math.random() * selectSkin.options.length);
+        selectHair.selectedIndex = Math.floor(Math.random() * selectHair.options.length);
+        selectTop.selectedIndex = Math.floor(Math.random() * selectTop.options.length);
+        selectBottom.selectedIndex = Math.floor(Math.random() * selectBottom.options.length);
+        selectAccessory.selectedIndex = Math.floor(Math.random() * selectAccessory.options.length);
+
+        renderPaperdoll();
+      });
+
+      renderPaperdoll();
+    }
+
+    setupBuilder();
+    document.addEventListener('astro:after-swap', setupBuilder);
+  </script>
+</body>
+</html>

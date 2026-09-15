@@ -8,10 +8,11 @@ if (!apiKey) {
   process.exit(1);
 }
 
-const topic = process.env.DEVLOG_TOPIC || 'Weekly Progress & Mechanics Update';
 const ai = new GoogleGenAI({ apiKey });
-
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const DRAFTS_DIR = path.join('src', 'content', 'devlog-drafts');
+const POSTS_DIR = path.join('src', 'content', 'devlogs');
 
 async function generateWithRetry(prompt, models = ['gemini-3.6-flash', 'gemini-3.6-flash-lite']) {
   for (const model of models) {
@@ -27,10 +28,10 @@ async function generateWithRetry(prompt, models = ['gemini-3.6-flash', 'gemini-3
         const isTransient = err?.status === 503 || err?.status === 429 || err?.message?.includes('demand') || err?.message?.includes('quota');
         if (isTransient && attempt < 4) {
           const delay = attempt * 4000;
-          console.warn(`Model ${model} returned transient error (${err.status || 'capacity'}). Retrying in ${delay / 1000}s...`);
+          console.warn(`Model ${model} returned transient error. Retrying in ${delay / 1000}s...`);
           await sleep(delay);
         } else if (isTransient && attempt === 4) {
-          console.warn(`Model ${model} unavailable after 4 attempts. Trying fallback model...`);
+          console.warn(`Model ${model} unavailable. Trying fallback model...`);
           break;
         } else {
           throw err;
@@ -38,40 +39,74 @@ async function generateWithRetry(prompt, models = ['gemini-3.6-flash', 'gemini-3
       }
     }
   }
-  throw new Error('All models and retry attempts exhausted.');
+  throw new Error('All models exhausted.');
 }
 
 async function run() {
-  const prompt = `
-You are a game developer writing an engaging, authentic devlog post for an independent simulation game studio called "Fin & Games".
-The studio's current project is "Caravan Park Tycoon", a British coastal holiday park management simulation built in Godot.
+  const files = await fs.readdir(DRAFTS_DIR);
+  const draftFiles = files.filter(f => f.endsWith('.txt') || f.endsWith('.md') && f !== '.gitkeep');
 
-Topic/Update Notes: "${topic}"
+  if (draftFiles.length === 0) {
+    console.log('No drafts found in', DRAFTS_DIR);
+    return;
+  }
+
+  for (const file of draftFiles) {
+    const draftPath = path.join(DRAFTS_DIR, file);
+    const rawNotes = await fs.readFile(draftPath, 'utf-8');
+
+    if (!rawNotes.trim()) {
+      console.log(`Skipping empty draft: ${file}`);
+      await fs.unlink(draftPath);
+      continue;
+    }
+
+    console.log(`Processing draft: ${file}...`);
+
+    const prompt = `
+You are an indie game developer writing an authentic, thoroughly entertaining devlog for "Fin & Games", creators of "Caravan Park Tycoon"—a simulation game celebrating the quirks of British coastal holiday parks built in Godot.
+
+Tone Guidelines:
+- Dry, self-deprecating British humour (think tea-drinking stoicism, horizontal drizzle, and skeptical seagulls).
+- Keep technical insights genuine—discuss Godot architecture, node mechanics, and simulation logic accurately—but frame bugs and park systems with wry seaside realities (e.g., wonky chemical toilet valves, deckchairs in the hedge, lukewarm tea, caravan awning physics disasters).
+- Witty section headers that fit the aesthetic (e.g., "The Damp Reality", "Plumbing Disasters & Tilemaps", "Keeping the Barrows Rolling").
+- Enthusiastic about indie game design without sounding like a corporate PR release.
+
+Raw Developer Notes to expand:
+"""
+${rawNotes}
+"""
 
 Respond ONLY with valid Markdown containing YAML frontmatter at the top in this exact schema:
 ---
-title: "<Punchy devlog title>"
-description: "<One or two sentence summary>"
+title: "<Punchy, witty devlog title>"
+description: "<Dry, one-sentence summary of what broke and what was fixed>"
 pubDate: "${new Date().toISOString().split('T')[0]}"
 author: "Fin & Games Team"
 draft: false
-tags: ["caravan-park-tycoon", "devlog", "simulation"]
+tags: ["caravan-park-tycoon", "devlog", "simulation", "gamedev"]
 ---
 
-Followed immediately by 3-4 structured sections detailing progress, systems architecture, design decisions, and what's next. Do not wrap the response in outer code blocks (\`\`\`markdown ... \`\`\`).
+Followed immediately by 3-4 well-structured sections detailing development progress, underlying systems, lessons learned, and what's on the horizon. Do not wrap the output in outer code fences (\`\`\`markdown ... \`\`\`).
 `;
 
-  const response = await generateWithRetry(prompt);
-  const content = response.text.trim();
-  const slug = topic
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '');
-  const filename = `${new Date().toISOString().split('T')[0]}-${slug.slice(0, 30)}.md`;
-  const targetPath = path.join('src', 'content', 'devlogs', filename);
+    const response = await generateWithRetry(prompt);
+    const content = response.text.trim();
 
-  await fs.writeFile(targetPath, content, 'utf-8');
-  console.log(`Successfully generated devlog: ${targetPath}`);
+    const baseName = path.parse(file).name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+
+    const targetFilename = `${new Date().toISOString().split('T')[0]}-${baseName.slice(0, 30)}.md`;
+    const targetPath = path.join(POSTS_DIR, targetFilename);
+
+    await fs.writeFile(targetPath, content, 'utf-8');
+    console.log(`Created devlog post: ${targetPath}`);
+
+    await fs.unlink(draftPath);
+    console.log(`Consumed and removed draft: ${file}`);
+  }
 }
 
 run().catch((err) => {

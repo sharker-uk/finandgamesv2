@@ -1,0 +1,42 @@
+name: Publish Gemini Devlog
+
+on:
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: 'Topic or raw notes for the devlog entry'
+        required: true
+        default: 'Guest pathfinding and pitch placement mechanics'
+
+permissions:
+  contents: write
+
+jobs:
+  create-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Devlog with Gemini
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          DEVLOG_TOPIC: ${{ github.event.inputs.topic }}
+        run: node scripts/generate-devlog.mjs
+
+      - name: Commit and Push Devlog
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/content/devlogs/
+          git commit -m "content: auto-generate devlog via Gemini [skip ci]" || exit 0
+          git push origin main

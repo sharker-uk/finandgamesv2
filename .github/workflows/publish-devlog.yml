@@ -6,7 +6,7 @@ on:
       topic:
         description: 'Topic or raw notes for the devlog entry'
         required: true
-        type: string
+        type: text
         default: 'Guest pathfinding and pitch placement mechanics'
 
 permissions:

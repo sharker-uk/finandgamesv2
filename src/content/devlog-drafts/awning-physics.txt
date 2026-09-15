@@ -1,0 +1,5 @@
+- Added awning attachment mechanic for touring caravans
+- Bug: guy ropes had inverted friction, causing awnings to catapult into the North Sea
+- Added weather states: drizzle, mist, and "stay in the club lounge" torrential downpour
+- Fixed guest pathfinding getting stuck behind the recycling bins
+- Next: coin pusher machine payouts and bingo callers

@@ -13,7 +13,7 @@ const ai = new GoogleGenAI({ apiKey });
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-async function generateWithRetry(prompt, models = ['gemini-1.5-flash', 'gemini-1.5-pro']) {
+async function generateWithRetry(prompt, models = ['gemini-2.0-flash', 'gemini-2.0-flash-lite']) {
   for (const model of models) {
     for (let attempt = 1; attempt <= 3; attempt++) {
       try {
@@ -38,7 +38,7 @@ async function generateWithRetry(prompt, models = ['gemini-1.5-flash', 'gemini-1
       }
     }
   }
-  throw new Error('All models and retry attempts failed due to capacity constraints.');
+  throw new Error('All models and retry attempts failed.');
 }
 
 async function run() {

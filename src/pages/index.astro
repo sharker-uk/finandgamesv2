@@ -1,6 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
-
+import Logo from '../components/Logo.astro';
 const allDevlogs = await getCollection('devlogs', ({ data }) => !data.draft);
 const latestDevlogs = allDevlogs
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
@@ -10,6 +10,7 @@ const latestDevlogs = allDevlogs
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fin & Games | Independent Simulation Studio</title>
@@ -68,26 +69,14 @@ const latestDevlogs = allDevlogs
     }
 
     .brand {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
       text-decoration: none;
-      font-weight: 800;
-      font-size: 1.35rem;
-      letter-spacing: -0.02em;
-      color: var(--text);
+      transition: opacity 0.2s ease;
     }
 
-    .brand-mark {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 12px var(--accent);
-    }
-
-    .brand span {
-      color: var(--accent);
+    .brand:hover {
+      opacity: 0.9;
     }
 
     nav {
@@ -289,9 +278,8 @@ const latestDevlogs = allDevlogs
 <body>
   <div class="container">
     <header>
-      <a href="/" class="brand">
-        <span class="brand-mark"></span>
-        Fin <span>&</span> Games
+      <a href="/" class="brand" aria-label="Fin & Games Home">
+        <Logo size={36} />
       </a>
       <nav>
         <a href="#projects">Projects</a>

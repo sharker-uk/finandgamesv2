@@ -13,24 +13,24 @@ const ai = new GoogleGenAI({ apiKey });
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-async function generateWithRetry(prompt, models = ['gemini-2.0-flash', 'gemini-2.0-flash-lite']) {
+async function generateWithRetry(prompt, models = ['gemini-3.6-flash', 'gemini-3.6-flash-lite']) {
   for (const model of models) {
-    for (let attempt = 1; attempt <= 3; attempt++) {
+    for (let attempt = 1; attempt <= 4; attempt++) {
       try {
-        console.log(`Requesting ${model} (attempt ${attempt}/3)...`);
+        console.log(`Requesting ${model} (attempt ${attempt}/4)...`);
         const response = await ai.models.generateContent({
           model,
           contents: prompt,
         });
         return response;
       } catch (err) {
-        const is503 = err?.status === 503 || err?.message?.includes('503');
-        if (is503 && attempt < 3) {
-          const delay = attempt * 3000;
-          console.warn(`Model ${model} returned 503. Retrying in ${delay / 1000}s...`);
+        const isTransient = err?.status === 503 || err?.status === 429 || err?.message?.includes('demand') || err?.message?.includes('quota');
+        if (isTransient && attempt < 4) {
+          const delay = attempt * 4000;
+          console.warn(`Model ${model} returned transient error (${err.status || 'capacity'}). Retrying in ${delay / 1000}s...`);
           await sleep(delay);
-        } else if (is503 && attempt === 3) {
-          console.warn(`Model ${model} unavailable after 3 attempts. Falling back to next model...`);
+        } else if (isTransient && attempt === 4) {
+          console.warn(`Model ${model} unavailable after 4 attempts. Trying fallback model...`);
           break;
         } else {
           throw err;
@@ -38,7 +38,7 @@ async function generateWithRetry(prompt, models = ['gemini-2.0-flash', 'gemini-2
       }
     }
   }
-  throw new Error('All models and retry attempts failed.');
+  throw new Error('All models and retry attempts exhausted.');
 }
 
 async function run() {

@@ -1,0 +1,5 @@
+
+- Working on website 
+- Build auto deployements for Devlogs 
+- Added about page 
+- removed seagul bob for site content 

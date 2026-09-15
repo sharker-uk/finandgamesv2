@@ -9,21 +9,161 @@ import Logo from '../components/Logo.astro';
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>About | Fin & Games</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
   <style>
-    body { background: #090d16; color: #f8fafc; font-family: system-ui, sans-serif; padding: 2rem 1.5rem; max-width: 800px; margin: 0 auto; line-height: 1.6; }
-    a { color: #38bdf8; text-decoration: none; }
-    header { padding-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 2rem; }
+    :root {
+      --bg: #090d16;
+      --bg-surface: #111827;
+      --border: rgba(255, 255, 255, 0.08);
+      --accent: #38bdf8;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(56, 189, 248, 0.12), transparent);
+      background-repeat: no-repeat;
+      color: var(--text);
+      line-height: 1.7;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem;
+      width: 100%;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+    }
+
+    nav {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.15s ease;
+    }
+
+    nav a:hover,
+    nav a.active {
+      color: var(--text);
+    }
+
+    .back-nav {
+      margin: 2.5rem 0 1.5rem;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      text-decoration: none;
+      font-weight: 500;
+      transition: transform 0.15s ease;
+    }
+
+    .back-link:hover {
+      transform: translateX(-3px);
+    }
+
+    main h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+    }
+
+    .content-block {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .content-block p + p {
+      margin-top: 1rem;
+    }
+
+    footer {
+      margin-top: auto;
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
   </style>
 </head>
 <body>
-  <header>
-    <a href="/"><Logo size={36} /></a>
-  </header>
-  <main>
-    <h1>About Fin & Games</h1>
-    <p style="margin-top: 1rem; color: #94a3b8;">
-      We are an independent simulation game studio crafting systems-driven games with a distinctly British perspective.
-    </p>
-  </main>
+  <div class="container">
+    <header>
+      <a href="/" class="brand" aria-label="Fin & Games Home">
+        <Logo size={36} />
+      </a>
+      <nav>
+        <a href="/about" class="active">About</a>
+        <a href="/#projects">Projects</a>
+        <a href="/#devlogs">Devlogs</a>
+        <a href="https://github.com/sharker-uk/finandgamesv2" target="_blank" rel="noreferrer">GitHub</a>
+      </nav>
+    </header>
+
+    <div class="back-nav">
+      <a href="/" class="back-link">&larr; Return to Home</a>
+    </div>
+
+    <main>
+      <h1>About Fin &amp; Games</h1>
+      <div class="content-block">
+        <p>
+          Fin &amp; Games is an independent game development studio dedicated to crafting systems-driven simulation experiences with a distinctly British perspective.
+        </p>
+        <p>
+          We build with a focus on emergent mechanics, tight systemic loops, and open-curtain technical transparency—celebrating both the breakthroughs and the physics mishaps along the way.
+        </p>
+      </div>
+    </main>
+
+    <footer>
+      <p>&copy; {new Date().getFullYear()} Fin &amp; Games Studio. Built with Astro &amp; Cloudflare Pages.</p>
+    </footer>
+  </div>
 </body>
 </html>

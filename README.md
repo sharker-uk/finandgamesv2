@@ -1,43 +1,52 @@
-# Astro Starter Kit: Minimal
+# Fin & Games Website
 
-```sh
-npm create astro@latest -- --template minimal
+This branch is the studio-first redesign of the Fin & Games website.
+
+## Structure
+
+- `/` studio homepage
+- `/games` game catalogue
+- `/games/caravan-park-tycoon` Caravan Park Tycoon hub
+- `/games/caravan-park-tycoon/development` game-specific devlogs
+- `/games/caravan-park-tycoon/features` features
+- `/games/caravan-park-tycoon/roadmap` roadmap
+- `/games/caravan-park-tycoon/expansions` expansion area
+- `/blog` studio-wide blog
+- `/news` major announcements
+- `/about` studio information
+- `/support` support
+- `/npc-builder` community/NPC prototype
+
+The key rule is that Fin & Games is the parent studio. A game gets its own section and content history without taking over the studio site. Future games can be added under `/games/<slug>`.
+
+## Content model
+
+Game development logs belong in:
+
+`src/content/games/<game-slug>/devlogs/`
+
+Studio articles belong in:
+
+`src/content/blog/`
+
+Major announcements belong in:
+
+`src/content/news/`
+
+Drafts for the automated game-devlog pipeline belong in:
+
+`src/content/drafts/games/<game-slug>/`
+
+The old test devlogs were deliberately removed from this branch.
+
+## Local development
+
+Requires Node 22.12+.
+
+```
+npm ci
+npm run dev
+npm run build
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+The branch is intended for visual review before production changes are merged.

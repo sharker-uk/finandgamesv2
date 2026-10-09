@@ -50,3 +50,14 @@ npm run build
 ```
 
 The branch is intended for visual review before production changes are merged.
+
+## Studio blog editorial workflow
+
+- Published studio articles live in `src/content/blog/`.
+- Keep rough, unpublished drafts in `src/content/drafts/blog/`; this directory is outside the published content collection.
+- Optional article cover images use `coverImage` and `coverAlt` in frontmatter. Store public images under `public/images/blog/` and reference them with paths such as `/images/blog/article-name/cover.jpg`.
+- Inline JPG and PNG images can be embedded with standard Markdown image syntax. See `public/images/blog/README.md` and `public/images/devlogs/README.md`.
+- The one-pass editorial helper is `scripts/polish-article.mjs`. Run it with Node 22.12+ and a Gemini API key:
+  `GEMINI_API_KEY=... node scripts/polish-article.mjs src/content/drafts/blog/my-draft.md`
+- The helper makes one text-generation call, preserves YAML frontmatter, and writes a separate `.edited.md` file without overwriting the source. Review all edits before moving an article into a published content collection.
+- The editorial helper does not publish content, research facts, or generate images. Never commit API keys.

@@ -63,7 +63,7 @@ export async function listDrafts(env:Env){
    const meta=fm?.[1]||"";
    const val=(key:string)=>meta.match(new RegExp("^"+key+":\\s*(.*)$","m"))?.[1]?.replace(/^["']|["']$/g,"")||"";
    const isDraft=val("draft")!=="false";
-   return {path:item.path,sha:f.sha,title:val("title")||item.path.split("/").pop()!,date:val("pubDate"),description:val("description"),draft:isDraft,body:fm?.[2]||"",type:val("editorialType")||(item.path.includes("/devlogs/")?"devlog":item.path.startsWith("src/content/news/")?"studio":"blog")};
+   return {path:item.path,sha:f.sha,title:val("title")||item.path.split("/").pop()!,date:val("pubDate"),description:val("description"),author:val("author")||"Fin & Games Team",tags:val("tags").replace(/^\\[|\\]$/g,"").split(",").map(s=>s.trim().replace(/^["\']|["\']$/g,"")).filter(Boolean),game:val("game"),coverImage:val("coverImage"),coverAlt:val("coverAlt"),draft:isDraft,body:fm?.[2]||"",type:val("editorialType")||(item.path.includes("/devlogs/")?"devlog":item.path.startsWith("src/content/news/")?"studio":"blog")};
  }));
  return results.filter(x=>x.draft).sort((a,b)=>b.date.localeCompare(a.date));
 }

@@ -4,7 +4,9 @@ export interface Env {
   CF_ACCESS_TEAM_DOMAIN?: string;
   CF_ACCESS_AUD?: string;
   ADMIN_EMAIL?: string;
-  CONTENT_BRANCH?: string;\n  GEMINI_API_KEY?: string;\n  GEMINI_MODEL?: string;
+  CONTENT_BRANCH?: string;
+  GEMINI_API_KEY?: string;
+  GEMINI_MODEL?: string;
 }
 type Claims = { aud?: string | string[]; email?: string; exp?: number; iss?: string };
 const json = (error: string, status: number) => Response.json({ error }, { status, headers: { "Cache-Control": "no-store" } });

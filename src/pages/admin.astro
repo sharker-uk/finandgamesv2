@@ -48,7 +48,7 @@ import Logo from "../components/Logo.astro";
 <div class="field"><label for="cover-image">Cover image path (optional)</label><input id="cover-image" placeholder="/uploads/my-post/cover.jpg"></div>
 <div class="field"><label for="cover-alt">Cover image alt text</label><input id="cover-alt" placeholder="Describe the cover image"></div>
 </div>
-<div class="actions"><button class="btn" id="save" type="submit">Save draft to development branch</button><button class="btn secondary" id="new-post" type="button">Clear / new post</button></div>
+<div class="actions"><button class="btn" id="save" type="submit">Save draft to development branch</button><button class="btn secondary" id="copyedit" type="button">AI copyedit this body</button><button class="btn secondary" id="new-post" type="button">Clear / new post</button></div>
 <p class="footer-note">The original source is never sent to an external copyeditor automatically. AI copyediting, approval/promotion and rendered Markdown preview are separate next steps; for now this desk safely saves source Markdown and image assets.</p>
 </form>
 </section>
@@ -98,6 +98,7 @@ async function loadDrafts(){
  draftsEl.replaceChildren();
  if(!data.drafts.length){const p=document.createElement("p");p.className="hint";p.textContent="No drafts yet. A quiet shelf is a good shelf.";draftsEl.append(p);return;}
  for(const d of data.drafts as Draft[]){
+  if(currentPath===d.path)currentSha=d.sha;
   const card=document.createElement("article");card.className="draft";
   const h=document.createElement("h3");h.textContent=d.title;card.append(h);
   const p=document.createElement("p");p.textContent=d.type+" · "+d.date+" · "+d.path;card.append(p);
@@ -144,6 +145,17 @@ $("insert-image").addEventListener("click",()=>{
  const start=area.selectionStart,end=area.selectionEnd;area.setRangeText(snippet,start,end,"end");area.focus();$("preview").textContent=area.value;
 });
 $("set-cover").addEventListener("click",()=>{if(!uploaded)return;$("cover-image").value=uploaded.url;$("cover-alt").value=uploaded.alt;message("Cover image set. Save the draft to store its metadata.");});
+
+$("copyedit").addEventListener("click",async()=>{
+ const body=$("body").value;if(!body.trim()){message("Write or load an article before copyediting.",true);return;}
+ const button=$("copyedit") as HTMLButtonElement;button.disabled=true;
+ try{
+  const result=await api("/admin/api/copyedit",{method:"POST",body:JSON.stringify({type:val("type"),body})});
+  $("body").value=result.body;$("preview").textContent=result.body;
+  message("AI copyedit complete using the "+result.profile+" profile. Please review every change before saving.");
+ }catch(e){message(e instanceof Error?e.message:"Copyediting failed.",true);}
+ finally{button.disabled=false;}
+});
 typeChanged();void loadDrafts();
 </script>
 </body>

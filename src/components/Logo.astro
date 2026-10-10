@@ -19,30 +19,30 @@ const { className = "", size = 38, showText = true } = Astro.props;
   >
     <defs>
       <linearGradient id="finGradient" x1="15" y1="85" x2="85" y2="15" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stop-color="#0284c7" />
-        <stop offset="50%" stop-color="#38bdf8" />
-        <stop offset="100%" stop-color="#0ea5e9" />
+        <stop offset="0%" stop-color="#315a43" />
+        <stop offset="50%" stop-color="#d96f43" />
+        <stop offset="100%" stop-color="#397b83" />
       </linearGradient>
       <linearGradient id="dpadGradient" x1="30" y1="70" x2="70" y2="30" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stop-color="#0f172a" />
-        <stop offset="100%" stop-color="#1e293b" />
+        <stop offset="0%" stop-color="#203e30" />
+        <stop offset="100%" stop-color="#315a43" />
       </linearGradient>
       <filter id="subtleGlow" x="-10%" y="-10%" width="120%" height="120%">
-        <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#38bdf8" flood-opacity="0.3" />
+        <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#d96f43" flood-opacity="0.3" />
       </filter>
     </defs>
 
     <!-- Water Ripples / Base Arc -->
     <path
       d="M10 82 C30 78, 45 86, 65 82 C75 80, 85 82, 92 84"
-      stroke="#38bdf8"
+      stroke="#d96f43"
       stroke-width="4"
       stroke-linecap="round"
       opacity="0.6"
     />
     <path
       d="M20 89 C40 85, 55 92, 80 88"
-      stroke="#0284c7"
+      stroke="#315a43"
       stroke-width="3"
       stroke-linecap="round"
       opacity="0.4"
@@ -66,12 +66,12 @@ const { className = "", size = 38, showText = true } = Astro.props;
         stroke-linejoin="round"
       />
       <!-- Center Pivot Indicator -->
-      <circle cx="0" cy="0" r="2.5" fill="#38bdf8" />
+      <circle cx="0" cy="0" r="2.5" fill="#d96f43" />
       <!-- Directional pip highlights -->
-      <path d="M0 -15 L-3 -11 H3 Z" fill="#94a3b8" />
-      <path d="M0 15 L-3 11 H3 Z" fill="#94a3b8" />
-      <path d="M-15 0 L-11 -3 V3 Z" fill="#94a3b8" />
-      <path d="M15 0 L11 -3 V3 Z" fill="#94a3b8" />
+      <path d="M0 -15 L-3 -11 H3 Z" fill="#efc76b" />
+      <path d="M0 15 L-3 11 H3 Z" fill="#efc76b" />
+      <path d="M-15 0 L-11 -3 V3 Z" fill="#efc76b" />
+      <path d="M15 0 L11 -3 V3 Z" fill="#efc76b" />
     </g>
   </svg>
 
@@ -119,24 +119,24 @@ const { className = "", size = 38, showText = true } = Astro.props;
   }
 
   .brand-amp {
-    color: #38bdf8;
+    color: #d96f43;
     margin: 0 0.15rem;
     font-weight: 600;
     font-size: 1.1rem;
   }
 
   .brand-games {
-    color: #94a3b8;
+    color: #efc76b;
     font-weight: 700;
     letter-spacing: 0.04em;
   }
 
   @media (prefers-color-scheme: light) {
     .brand-fin {
-      color: #0f172a;
+      color: #203e30;
     }
     .brand-games {
-      color: #475569;
+      color: #637267;
     }
   }
 </style>

@@ -83,7 +83,7 @@ $("body").addEventListener("input",()=>{$("preview").textContent=$("body").value
 function val(id:string){return $(id).value.trim();}
 function resetForm(){
  form.reset();$("author").value="Fin & Games Team";$("game").value="caravan-park-tycoon";$("date").value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
- currentPath="";currentSha="";uploaded=null;slugManuallyEdited=false;
+ currentPath="";currentSha="";uploaded=null;slugManuallyEdited=false;$("slug").disabled=false;
  $("form-title").textContent="Start a post";$("save").textContent="Save draft to development branch";
  $("insert-image").disabled=true;$("set-cover").disabled=true;$("uploaded-image").textContent="";
  $("preview").textContent="(Your Markdown will appear here.)";typeChanged();
@@ -116,7 +116,7 @@ async function loadDrafts(){
  }catch(e){message(e instanceof Error?e.message:"Could not load drafts.",true);draftsEl.replaceChildren();}
 }
 function fillDraft(d:Draft){
- currentPath=d.path;currentSha=d.sha;slugManuallyEdited=true;uploaded=null;
+ currentPath=d.path;currentSha=d.sha;slugManuallyEdited=true;uploaded=null;$("slug").disabled=true;
  $("type").value=d.type;$("title").value=d.title;$("slug").value=d.path.split("/").pop()!.replace(/\.md$/,"");$("date").value=d.date;
  $("description").value=d.description;$("author").value=d.author||"Fin & Games Team";$("tags").value=(d.tags||[]).join(", ");$("game").value=d.game||"caravan-park-tycoon";
  $("body").value=d.body;$("cover-image").value=d.coverImage||"";$("cover-alt").value=d.coverAlt||"";

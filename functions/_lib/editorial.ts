@@ -1,7 +1,7 @@
 import type { Env } from "./auth";
 const OWNER="sharker-uk", REPO="finandgamesv2";
 const API=`https://api.github.com/repos/${OWNER}/${REPO}`;
-const branch=(env:Env)=>env.CONTENT_BRANCH?.trim() || "editorial-workflow-media";
+const branch=(env:Env)=>env.CONTENT_BRANCH?.trim() || "dev";
 export type PostType="blog"|"studio"|"news"|"devlog";
 export type DraftInput={type:PostType;title:string;slug:string;date:string;description:string;author:string;tags:string[];game?:string;body:string;coverImage?:string;coverAlt?:string;draft?:boolean};
 function headers(env:Env,json=false):HeadersInit {

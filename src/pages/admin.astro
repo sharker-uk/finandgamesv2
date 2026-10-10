@@ -102,7 +102,16 @@ async function loadDrafts(){
   const card=document.createElement("article");card.className="draft";
   const h=document.createElement("h3");h.textContent=d.title;card.append(h);
   const p=document.createElement("p");p.textContent=d.type+" · "+d.date+" · "+d.path;card.append(p);
-  const b=document.createElement("button");b.className="btn secondary";b.type="button";b.textContent="Edit draft";b.addEventListener("click",()=>fillDraft(d));card.append(b);draftsEl.append(card);
+  const b=document.createElement("button");b.className="btn secondary";b.type="button";b.textContent="Edit draft";b.addEventListener("click",()=>fillDraft(d));card.append(b);
+  const approve=document.createElement("button");approve.className="btn orange";approve.type="button";approve.textContent="Approve for dev preview";approve.addEventListener("click",async()=>{
+   if(!confirm("Approve this post on the dev branch? It will appear on that branch's preview. Production changes only after you merge the approved dev branch into main."))return;
+   approve.disabled=true;
+   try{
+    await api("/admin/api/posts",{method:"POST",body:JSON.stringify({...d,draft:false})});
+    message("Approved on the dev branch. It is no longer a draft; production remains unchanged until merge.");
+    await loadDrafts();
+   }catch(e){message(e instanceof Error?e.message:"Could not approve this draft.",true);approve.disabled=false;}
+  });card.append(approve);draftsEl.append(card);
  }
  }catch(e){message(e instanceof Error?e.message:"Could not load drafts.",true);draftsEl.replaceChildren();}
 }

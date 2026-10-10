@@ -56,7 +56,9 @@ const devlogs = (await getCollection("gameDevlogs", ({ data }) => !data.draft &&
     .btn:hover { transform: translateY(-2px); }
     .btn.primary { background: var(--green); color: #fff8e8; }
     .btn.secondary { color: var(--green); }
-    .scene { min-height: 390px; position: relative; overflow: hidden; isolation: isolate; border: 2px solid var(--green); border-radius: 48% 48% 8px 8px / 26% 26% 8px 8px; background: linear-gradient(#a9d3d1 0 43%, #d6e2b0 43% 100%); box-shadow: 10px 10px 0 var(--paper-deep); }
+    .scene { min-height: 390px; position: relative; overflow: hidden; isolation: isolate; border: 2px solid var(--green); border-radius: 48% 48% 8px 8px / 26% 26% 8px 8px; background: #8bbbc0; box-shadow: 10px 10px 0 var(--paper-deep); }
+    .scene img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .scene:after { content: ""; position: absolute; inset: 40% 0 0; background: linear-gradient(transparent, #203e3066); pointer-events: none; }
     .sun { position: absolute; top: 36px; right: 52px; width: 66px; height: 66px; border-radius: 50%; background: var(--yellow); }
     .cloud { position: absolute; top: 70px; left: 44px; width: 100px; height: 24px; border-radius: 30px; background: #f9f4e4; }
     .cloud:before, .cloud:after { content: ""; position: absolute; bottom: 5px; border-radius: 50%; background: inherit; }
@@ -77,6 +79,14 @@ const devlogs = (await getCollection("gameDevlogs", ({ data }) => !data.draft &&
     .ticker { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 13px 0; color: var(--green); font-size: .75rem; font-weight: 800; letter-spacing: .14em; text-align: center; text-transform: uppercase; }
     .ticker span { color: var(--orange); padding: 0 12px; }
     .section { padding: 70px 0; }
+    .inspiration-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 30px; }
+    .inspiration-card { margin: 0; background: #fbf7ec; border: 1px solid var(--line); }
+    .inspiration-card img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
+    .inspiration-card figcaption { padding: 16px 18px 18px; }
+    .inspiration-card h3 { margin: 0 0 5px; font-size: 1.25rem; }
+    .inspiration-card p { margin: 0; color: var(--muted); font-size: .82rem; }
+    .image-credit { margin-top: 16px; color: var(--muted); font-size: .75rem; }
+    .image-credit a { color: var(--green); }
     .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 28px; }
     h2 { margin: 8px 0 0; font-size: clamp(2.2rem, 4.2vw, 3.6rem); line-height: 1; letter-spacing: -.045em; }
     .section-heading p { max-width: 410px; margin: 0; color: var(--muted); }
@@ -103,7 +113,7 @@ const devlogs = (await getCollection("gameDevlogs", ({ data }) => !data.draft &&
     footer { border-top: 1px solid var(--line); padding: 22px 0 30px; color: var(--muted); font-size: .82rem; }
     footer .foot-inner { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
     footer a { color: var(--green); font-weight: 700; }
-    @media (max-width: 820px) { .hero { grid-template-columns: 1fr; padding: 54px 0; } .scene { min-height: 330px; } .section-heading { align-items: flex-start; flex-direction: column; } .feature-grid, .devlogs { grid-template-columns: 1fr; } .feature { min-height: 0; } .feature .icon { margin-bottom: 14px; } .closing { align-items: flex-start; flex-direction: column; } }
+    @media (max-width: 820px) { .hero { grid-template-columns: 1fr; padding: 54px 0; } .scene { min-height: 330px; } .section-heading { align-items: flex-start; flex-direction: column; } .feature-grid, .devlogs, .inspiration-grid { grid-template-columns: 1fr; } .feature { min-height: 0; } .feature .icon { margin-bottom: 14px; } .closing { align-items: flex-start; flex-direction: column; } }
     @media (max-width: 560px) { .shell { padding: 0 18px; } header { align-items: flex-start; flex-direction: column; } nav { justify-content: flex-start; gap: 8px 15px; } h1 { font-size: clamp(3.1rem, 17vw, 5rem); } .scene { min-height: 285px; } .actions .btn { flex: 1 1 100%; } }
     @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *:before, *:after { transition: none !important; } }
   </style>
@@ -135,7 +145,7 @@ const devlogs = (await getCollection("gameDevlogs", ({ data }) => !data.draft &&
           </div>
         </div>
         <div class="scene" role="img" aria-label="A stylised illustration of a caravan on a green seaside holiday park">
-          <div class="sun"></div><div class="cloud"></div><div class="hill back"></div><div class="sea-stripe"></div><div class="hill front"></div><div class="flag"></div><div class="caravan"></div><div class="wheel"></div><div class="wheel two"></div><div class="scene-stamp">Welcome to the coast</div>
+          <img src="https://images.pexels.com/photos/18026360/pexels-photo-18026360.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1400" alt="Static caravans beside the coast on a summer day" loading="eager" fetchpriority="high" /><div class="scene-stamp">Welcome to the coast</div>
         </div>
       </section>
     </main>
@@ -152,6 +162,17 @@ const devlogs = (await getCollection("gameDevlogs", ({ data }) => !data.draft &&
         <article class="feature"><span class="icon" aria-hidden="true">🚐</span><h3>Keep the guests happy</h3><p>Build pitches and facilities, balance your budget and give visitors a reason to stay.</p></article>
         <article class="feature"><span class="icon" aria-hidden="true">🦅</span><h3>Respect the locals</h3><p>There is a pecking order around here. Bob the Mighty would like a word.</p></article>
       </div>
+      <div class="inspiration-grid">
+        <figure class="inspiration-card">
+          <img src="https://images.unsplash.com/photo-1668455224783-3354979e8810?auto=format&amp;fit=crop&amp;w=1200&amp;q=85" alt="Coastal landscape at Ladram Bay Holiday Park in Devon" loading="lazy" />
+          <figcaption><h3>A proper British coast</h3><p>Coastal atmosphere and scenery, inspired by the real holiday parks that give the game its setting.</p></figcaption>
+        </figure>
+        <figure class="inspiration-card">
+          <img src="https://images.pexels.com/photos/14766771/pexels-photo-14766771.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1200" alt="Aerial view of a coastal campsite with rows of recreational vehicles" loading="lazy" />
+          <figcaption><h3>Plan the whole park</h3><p>An aerial view to help communicate the scale and layout of a holiday park.</p></figcaption>
+        </figure>
+      </div>
+      <p class="image-credit">Photography: <a href="https://unsplash.com/photos/a-body-of-water-with-land-and-buildings-around-it-n6pu1GCCqz8" target="_blank" rel="noreferrer">Sarah Doffman / Unsplash</a>; <a href="https://www.pexels.com/photo/static-caravans-on-the-seashore-18026360/" target="_blank" rel="noreferrer">Andras Stefuca / Pexels</a>; <a href="https://www.pexels.com/photo/aerial-photo-of-a-seaside-campsite-with-recreational-vehicles-14766771/" target="_blank" rel="noreferrer">Viktoria B. / Pexels</a>. Used under the respective free-photo licences.</p>
     </section>
   </div>
   <section class="dev-section">

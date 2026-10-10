@@ -8,6 +8,7 @@ const editorialFields = {
   author: z.string().default('Fin & Games Team'),
   tags: z.array(z.string()).default([]),
   draft: z.boolean().default(false),
+  editorialType: z.enum(["blog", "studio", "news", "devlog"]).optional(),
   // Public paths, e.g. /images/blog/article-cover.jpg.
   // Store image assets in public/ so Markdown can reference them predictably.
   coverImage: z.string().optional(),

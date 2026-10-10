@@ -12,7 +12,7 @@ export const onRequestPost:PagesFunction<Env>=async({request,env})=>{
  if(body.length>100000)return errorResponse("Article body is too large (100 KB maximum).",413);
  const profile=type==="devlog"?"devlog":type==="studio"||type==="news"?"studio":"blog";
  try{
-   const promptUrl=`https://api.github.com/repos/${OWNER}/${REPO}/contents/prompts/editorial/${profile}.md?ref=${encodeURIComponent(env.CONTENT_BRANCH?.trim()||"editorial-workflow-media")}`;
+   const promptUrl=`https://api.github.com/repos/${OWNER}/${REPO}/contents/prompts/editorial/${profile}.md?ref=${encodeURIComponent(env.CONTENT_BRANCH?.trim()||"dev")}`;
    const promptResponse=await fetch(promptUrl,{headers:{Authorization:`Bearer ${env.GITHUB_TOKEN}`,Accept:"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28"}});
    if(!promptResponse.ok)throw new Error("Could not load the selected editorial profile.");
    const promptFile=await promptResponse.json() as {content:string;encoding:string};

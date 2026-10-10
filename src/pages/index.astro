@@ -40,7 +40,6 @@ const blogPosts = (await getCollection("blog", ({ data }) => !data.draft))
 </head>
 <body>
   <div class="topline">INDEPENDENT GAMES STUDIO <span>✳</span> NORFOLK, ENGLAND <span>✳</span> TEA-POWERED, BUG-TESTED</div>
-  <main>
   <div class="wrap">
     <header>
       <a href="/" class="brand" aria-label="Fin & Games home"><Logo size={46}/></a>
@@ -48,6 +47,9 @@ const blogPosts = (await getCollection("blog", ({ data }) => !data.draft))
         <a href="/games">Games</a><a href="/blog">Studio blog</a><a href="/news">News</a><a href="/about">About</a><a href="/npc-builder">Community</a><a class="nav-cta" href="/support">Support us ↗</a>
       </nav>
     </header>
+  </div>
+  <main>
+  <div class="wrap">
       <section class="hero">
         <div>
           <div class="eyebrow">Small studio. Properly big ideas.</div>

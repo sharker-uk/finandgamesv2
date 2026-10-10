@@ -1,7 +1,7 @@
 import type { Env } from "./auth";
 const OWNER="sharker-uk", REPO="finandgamesv2";
 const API=`https://api.github.com/repos/${OWNER}/${REPO}`;
-const branch=(env:Env)=>env.CONTENT_BRANCH?.trim() || "dev";
+const branch=(env:Env)=>env.CONTENT_BRANCH?.trim() || "editorial-workflow-media";
 export type PostType="blog"|"studio"|"news"|"devlog";
 export type DraftInput={type:PostType;title:string;slug:string;date:string;description:string;author:string;tags:string[];game?:string;body:string;coverImage?:string;coverAlt?:string;draft?:boolean};
 function headers(env:Env,json=false):HeadersInit {
@@ -38,7 +38,7 @@ function destination(d:DraftInput){
  return `src/content/games/${d.game}/devlogs/${d.slug}.md`;
 }
 function frontmatter(d:DraftInput){
- const fields=[`title: ${quote(d.title.trim())}`,`pubDate: ${d.date}`,`description: ${quote(d.description.trim())}`,`author: ${quote(d.author.trim()||"Fin & Games Team")}`,`tags: [${d.tags.map(t=>quote(t.trim())).join(", ")}]`,`draft: ${d.draft!==false?"true":"false"}`];
+ const fields=[`title: ${quote(d.title.trim())}`,`pubDate: ${d.date}`,`description: ${quote(d.description.trim())}`,`author: ${quote(d.author.trim()||"Fin & Games Team")}`,`tags: [${d.tags.map(t=>quote(t.trim())).join(", ")}]`,`draft: ${d.draft!==false?"true":"false"}`,`editorialType: ${d.type}`];
  if(d.coverImage) fields.push(`coverImage: ${quote(d.coverImage)}`);
  if(d.coverAlt) fields.push(`coverAlt: ${quote(d.coverAlt)}`);
  if(d.type==="devlog") fields.push(`game: ${quote(d.game!)}`);
@@ -61,9 +61,9 @@ export async function listDrafts(env:Env){
    const raw=new TextDecoder().decode(Uint8Array.from(atob(f.content.replace(/\s/g,"")) ,c=>c.charCodeAt(0)));
    const fm=raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
    const meta=fm?.[1]||"";
-   const val=(key:string)=>meta.match(new RegExp("^"+key+":\s*(.*)$","m"))?.[1]?.replace(/^["']|["']$/g,"")||"";
+   const val=(key:string)=>meta.match(new RegExp("^"+key+":\\s*(.*)$","m"))?.[1]?.replace(/^["']|["']$/g,"")||"";
    const isDraft=val("draft")!=="false";
-   return {path:item.path,sha:f.sha,title:val("title")||item.path.split("/").pop()!,date:val("pubDate"),description:val("description"),draft:isDraft,body:fm?.[2]||"",type:item.path.includes("/devlogs/")?"devlog":item.path.startsWith("src/content/news/")?"studio":"blog"};
+   return {path:item.path,sha:f.sha,title:val("title")||item.path.split("/").pop()!,date:val("pubDate"),description:val("description"),draft:isDraft,body:fm?.[2]||"",type:val("editorialType")||(item.path.includes("/devlogs/")?"devlog":item.path.startsWith("src/content/news/")?"studio":"blog")};
  }));
  return results.filter(x=>x.draft).sort((a,b)=>b.date.localeCompare(a.date));
 }
@@ -86,4 +86,14 @@ export async function uploadAsset(env:Env,slug:string,fileName:string,mimeType:s
  if(await getSha(path,env)) throw new Error("That image filename already exists; rename the image and try again.");
  await request(`${API}/contents/${path.split("/").map(encodeURIComponent).join("/")}`,env,{method:"PUT",body:JSON.stringify({message:`Add editorial image for ${slug}`,content:base64,branch:branch(env)})});
  return {path,url:"/uploads/"+slug+"/"+fileName.replace(/\s+/g,"-")};
+}
+
+export async function updateDraft(env:Env,path:string,sha:string,input:DraftInput){
+ const expected=destination(input);
+ if(path!==expected||!path.startsWith("src/content/")||path.includes("..")) throw new Error("Draft path does not match its type and slug.");
+ const current=await request(`${API}/contents/${path.split("/").map(encodeURIComponent).join("/")}?ref=${encodeURIComponent(branch(env))}`,env);
+ const file=await current.json() as {sha:string};
+ if(file.sha!==sha) throw new Error("This draft changed on GitHub since it was loaded. Reload the drafts and apply your edits again.");
+ await request(`${API}/contents/${path.split("/").map(encodeURIComponent).join("/")}`,env,{method:"PUT",body:JSON.stringify({message:`Update editorial draft: ${input.title.trim()}`,content:enc(frontmatter(input)),sha:file.sha,branch:branch(env)})});
+ return {path,branch:branch(env),draft:true};
 }

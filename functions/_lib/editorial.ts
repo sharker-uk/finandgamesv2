@@ -72,8 +72,8 @@ export async function saveDraft(env:Env,input:DraftInput){
  if(!path.startsWith("src/content/")||path.includes("..")) throw new Error("Invalid content path.");
  const existing=await getSha(path,env);
  if(existing) throw new Error("A post with that slug already exists. Choose a different slug to avoid overwriting content.");
- await request(`${API}/contents/${path.split("/").map(encodeURIComponent).join("/")}`,env,{method:"PUT",body:JSON.stringify({message:`Add editorial draft: ${input.title.trim()}`,content:enc(frontmatter(input)),branch:branch(env)})});
- return {path,branch:branch(env),draft:input.draft!==false};
+ await request(`${API}/contents/${path.split("/").map(encodeURIComponent).join("/")}`,env,{method:"PUT",body:JSON.stringify({message:`Add editorial draft: ${input.title.trim()}`,content:enc(frontmatter({...input,draft:true})),branch:branch(env)})});
+ return {path,branch:branch(env),draft:true};
 }
 export async function uploadAsset(env:Env,slug:string,fileName:string,mimeType:string,base64:string){
  if(!safeSlug(slug)) throw new Error("Invalid asset folder slug.");

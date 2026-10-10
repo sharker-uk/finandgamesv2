@@ -67,6 +67,33 @@ The helper makes one text-generation call, preserves frontmatter and writes a se
 - If the source is ambiguous, the model must not guess.
 - API keys belong in environment variables or secret storage, never in the repository.
 
-## Admin publishing workflow
+## Editorial desk and publishing workflow
 
-A future browser-based editor should follow the same safety model as Sam's site: private admin routes protected by Cloudflare Access, drafts and edits reviewed before publication, GitHub as the source of truth, and Cloudflare Pages deploying only approved changes. Do not expose a write-capable publishing API publicly. Cloudflare Access and GitHub secrets require explicit environment configuration and end-to-end verification before the workflow is considered live.
+The browser editor lives at `/admin/` and supports four editorial types:
+
+- **Studio blog** — British English, light humour and minimal additions.
+- **Studio update** — professional, factual and careful about dates, certainty and commitments.
+- **News / announcement** — announcement-style studio news.
+- **Game devlog** — structured development notes, patch lists and optional Bob mystery.
+
+The editor saves Markdown drafts to the isolated `dev` branch, not `main`. Drafts use `draft: true` and are excluded from public collection pages. You can edit drafts, use the server-side Gemini copyeditor, upload images, insert inline Markdown images, set a cover image and explicitly approve a draft for the dev preview. Approval sets `draft: false` on `dev`; it does **not** merge or publish to production. Production changes only when you review and merge the approved content from `dev` into `main` and the production build succeeds.
+
+Images are saved under `public/uploads/<post-slug>/` and can be referenced inline as `![Alt text](/uploads/<post-slug>/image-name.webp)`. JPEG, PNG, WebP, GIF and AVIF are supported up to 5 MB per image. The cover image is stored in the content frontmatter as `coverImage`, with `coverAlt` for accessibility. Keep original images backed up elsewhere; deleting a post does not automatically remove uploaded assets.
+
+### Admin setup (required before use)
+
+The dashboard shell is static, but every read/write API checks the Cloudflare Access JWT, audience, issuer, expiry and authorised email. Configure Cloudflare Access to protect `/admin/*` on the **development preview hostname**, with an allow policy for the authorised reviewer. Do not assume the dashboard is secure merely because its URL is obscure.
+
+Set these Pages environment variables for the development preview:
+
+- `CF_ACCESS_TEAM_DOMAIN`: Cloudflare Access team domain, without `https://`.
+- `CF_ACCESS_AUD`: Audience (AUD) tag for the Access application protecting `/admin/*`.
+- `ADMIN_EMAIL`: exact authorised reviewer email.
+- `GITHUB_TOKEN` (secret): fine-grained token restricted to this repository, with Contents read/write permission.
+- `CONTENT_BRANCH=dev`: the branch the editorial APIs are allowed to read and write.
+- `GEMINI_API_KEY` (secret): server-side key for AI copyediting. It is never sent to the browser.
+- `GEMINI_MODEL` (optional): model identifier; defaults to `gemini-2.5-flash`.
+
+Configure and test the development preview first. Production Access policies and secrets must be configured separately only when you're ready. Never put secrets in repository files. If Access or the API secrets are missing, the APIs refuse to operate.
+
+The API currently supports creating/editing drafts, image uploads, profile-aware copyediting and explicit approval to the dev preview. A rendered Markdown preview, image deletion/cleanup and a full publish/rollback history remain follow-up work. Do not treat this workflow as production-ready until the preview build, Access policy, secrets and full end-to-end flow have been tested.

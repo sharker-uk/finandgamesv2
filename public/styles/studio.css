@@ -1,0 +1,95 @@
+/* Fin & Games studio design system
+   Shared editorial palette: paper, park green, coastal blue and seaside orange.
+   Loaded after page-level styles so older page layouts inherit the current identity. */
+:root {
+  color-scheme: light;
+  --studio-paper: #f6f0df;
+  --studio-paper-deep: #e9dfc5;
+  --studio-ink: #243e32;
+  --studio-green: #315a43;
+  --studio-green-dark: #203e30;
+  --studio-sea: #8bbbc0;
+  --studio-sea-deep: #397b83;
+  --studio-orange: #d96f43;
+  --studio-yellow: #efc76b;
+  --studio-muted: #637267;
+  --studio-line: #cfc5a9;
+  --studio-serif: Georgia, "Times New Roman", serif;
+  --studio-sans: "Trebuchet MS", Arial, sans-serif;
+}
+html { scroll-behavior: smooth; background: var(--studio-paper); }
+body {
+  background: var(--studio-paper) !important;
+  color: var(--studio-ink) !important;
+  font-family: var(--studio-sans) !important;
+  line-height: 1.7;
+}
+h1, h2, h3, h4, .page-title { color: var(--studio-ink) !important; font-family: var(--studio-serif) !important; letter-spacing: -.025em; }
+h1 { line-height: 1.02; letter-spacing: -.045em; }
+p { color: inherit; }
+a { transition: color .18s ease, background-color .18s ease, border-color .18s ease; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid var(--studio-orange) !important; outline-offset: 3px;
+}
+header {
+  border-color: var(--studio-line) !important;
+}
+header nav a, nav a, .nav a {
+  color: var(--studio-green) !important;
+  font-weight: 700;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+header nav a:hover, nav a:hover, .nav a:hover { color: var(--studio-orange) !important; }
+footer { border-color: var(--studio-line) !important; color: var(--studio-muted) !important; }
+.wrap, .container { max-width: 1180px; }
+.eyebrow, .section-label, .kicker, .meta, .status, .page-subtitle {
+  letter-spacing: .08em;
+}
+.eyebrow, .section-label, .kicker { color: var(--studio-orange) !important; font-weight: 800; }
+.lead, .description, .page-subtitle { color: #526559 !important; }
+.card, .post, .item, .content-block, .preview-card, .controls-card, .guest-info {
+  background: #fbf7ec !important;
+  color: var(--studio-ink) !important;
+  border-color: var(--studio-line) !important;
+  border-radius: 4px !important;
+  box-shadow: 4px 4px 0 var(--studio-paper-deep);
+}
+.card p, .post p, .item p, .content-block p { color: #526559; }
+.button, .btn, button, .nav-cta {
+  border-radius: 3px !important;
+  font-family: var(--studio-sans) !important;
+  font-weight: 800 !important;
+}
+.button-primary, .btn-primary, .primary, .nav-cta {
+  background: var(--studio-green) !important;
+  border-color: var(--studio-green) !important;
+  color: #fff8e8 !important;
+}
+.button-primary:hover, .btn-primary:hover, .primary:hover, .nav-cta:hover {
+  background: var(--studio-orange) !important;
+  border-color: var(--studio-orange) !important;
+  color: white !important;
+}
+.button-secondary, .btn-secondary, .button:not(.button-primary) {
+  background: transparent !important;
+  border-color: var(--studio-green) !important;
+  color: var(--studio-green) !important;
+}
+input, select, textarea {
+  background: #fffdf7 !important;
+  color: var(--studio-ink) !important;
+  border: 1px solid var(--studio-line) !important;
+  border-radius: 3px !important;
+}
+hr { border: 0; border-top: 1px solid var(--studio-line); }
+img { max-width: 100%; }
+::selection { background: var(--studio-yellow); color: var(--studio-green-dark); }
+@media (max-width: 760px) {
+  .wrap, .container { padding-left: 20px !important; padding-right: 20px !important; }
+  header { gap: 16px; }
+  header nav, nav { gap: 10px 16px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+}

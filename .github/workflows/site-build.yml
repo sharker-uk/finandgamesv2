@@ -2,12 +2,10 @@ name: Site build
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, dev]
   push:
     branches:
       - main
-      - studio-redesign-editorial-profiles
-      - editorial-workflow-media
       - dev
 
 permissions:

@@ -82,6 +82,14 @@ export async function uploadAsset(env:Env,slug:string,fileName:string,mimeType:s
  if(!allowed[ext]||allowed[ext]!==mimeType) throw new Error("Only JPEG, PNG, WebP, GIF and AVIF images are supported.");
  if(!/^[a-zA-Z0-9][a-zA-Z0-9._ -]{0,99}$/.test(fileName)||fileName.includes("..")) throw new Error("Use a simple image filename.");
  if(!/^[A-Za-z0-9+/]+={0,2}$/.test(base64)||base64.length>7_000_000) throw new Error("Image is invalid or too large (5 MB maximum).");
+ const bytes=Uint8Array.from(atob(base64),c=>c.charCodeAt(0));
+ const ascii=(start:number,end:number)=>String.fromCharCode(...bytes.slice(start,end));
+ const valid=ext==="jpg"||ext==="jpeg"?bytes[0]===0xff&&bytes[1]===0xd8&&bytes[2]===0xff:
+  ext==="png"?ascii(0,8)===String.fromCharCode(137,80,78,71,13,10,26,10):
+  ext==="webp"?ascii(0,4)==="RIFF"&&ascii(8,12)==="WEBP":
+  ext==="gif"?["GIF87a","GIF89a"].includes(ascii(0,6)):
+  ext==="avif"?ascii(4,12).startsWith("ftypavif")||ascii(4,12).startsWith("ftypavis"):false;
+ if(!valid) throw new Error("The file contents do not match the selected image format.");
  const path=`public/uploads/${slug}/${fileName.replace(/\s+/g,"-")}`;
  if(await getSha(path,env)) throw new Error("That image filename already exists; rename the image and try again.");
  await request(`${API}/contents/${path.split("/").map(encodeURIComponent).join("/")}`,env,{method:"PUT",body:JSON.stringify({message:`Add editorial image for ${slug}`,content:base64,branch:branch(env)})});

@@ -63,7 +63,7 @@ export async function listDrafts(env:Env){
    const meta=fm?.[1]||"";
    const val=(key:string)=>meta.match(new RegExp("^"+key+":\\s*(.*)$","m"))?.[1]?.replace(/^["']|["']$/g,"")||"";
    const isDraft=val("draft")!=="false";
-   return {path:item.path,sha:f.sha,title:val("title")||item.path.split("/").pop()!,date:val("pubDate"),description:val("description"),author:val("author")||"Fin & Games Team",tags:val("tags").replace(/^\\[|\\]$/g,"").split(",").map(s=>s.trim().replace(/^["\']|["\']$/g,"")).filter(Boolean),game:val("game"),coverImage:val("coverImage"),coverAlt:val("coverAlt"),draft:isDraft,body:fm?.[2]||"",type:val("editorialType")||(item.path.includes("/devlogs/")?"devlog":item.path.startsWith("src/content/news/")?"studio":"blog")};
+   return {path:item.path,sha:f.sha,title:val("title")||item.path.split("/").pop()!,date:val("pubDate"),description:val("description"),author:val("author")||"Fin & Games Team",tags:val("tags").replace(/^\[/,"").replace(/\]$/,"").split(",").map(s=>s.trim().replace(/^["\']|["\']$/g,"")).filter(Boolean),game:val("game"),coverImage:val("coverImage"),coverAlt:val("coverAlt"),draft:isDraft,body:fm?.[2]||"",type:val("editorialType")||(item.path.includes("/devlogs/")?"devlog":item.path.startsWith("src/content/news/")?"studio":"blog")};
  }));
  return results.filter(x=>x.draft).sort((a,b)=>b.date.localeCompare(a.date));
 }
@@ -73,7 +73,7 @@ export async function saveDraft(env:Env,input:DraftInput){
  const existing=await getSha(path,env);
  if(existing) throw new Error("A post with that slug already exists. Choose a different slug to avoid overwriting content.");
  await request(`${API}/contents/${path.split("/").map(encodeURIComponent).join("/")}`,env,{method:"PUT",body:JSON.stringify({message:`Add editorial draft: ${input.title.trim()}`,content:enc(frontmatter(input)),branch:branch(env)})});
- return {path,branch:branch(env),draft:true};
+ return {path,branch:branch(env),draft:input.draft!==false};
 }
 export async function uploadAsset(env:Env,slug:string,fileName:string,mimeType:string,base64:string){
  if(!safeSlug(slug)) throw new Error("Invalid asset folder slug.");
@@ -103,5 +103,5 @@ export async function updateDraft(env:Env,path:string,sha:string,input:DraftInpu
  const file=await current.json() as {sha:string};
  if(file.sha!==sha) throw new Error("This draft changed on GitHub since it was loaded. Reload the drafts and apply your edits again.");
  await request(`${API}/contents/${path.split("/").map(encodeURIComponent).join("/")}`,env,{method:"PUT",body:JSON.stringify({message:`Update editorial draft: ${input.title.trim()}`,content:enc(frontmatter(input)),sha:file.sha,branch:branch(env)})});
- return {path,branch:branch(env),draft:true};
+ return {path,branch:branch(env),draft:input.draft!==false};
 }

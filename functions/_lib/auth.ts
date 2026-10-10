@@ -24,7 +24,7 @@ export async function requireAdmin(request: Request, env: Env): Promise<Response
     if (parts.length !== 3) return json("Invalid access token.", 401);
     const header = part<{alg?:string;kid?:string}>(parts[0]);
     const claims = part<Claims>(parts[1]);
-    const team = env.CF_ACCESS_TEAM_DOMAIN.replace(/^https?:\\/\\//, "").replace(/\\/$/, "");
+    const team = env.CF_ACCESS_TEAM_DOMAIN.replace(/^https?:\/\//, "").replace(/\/$/, "");
     const issuer = "https://" + team;
     const aud = Array.isArray(claims.aud) ? claims.aud : [claims.aud];
     if (header.alg !== "RS256" || !header.kid || claims.iss !== issuer ||

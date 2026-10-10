@@ -24,7 +24,7 @@ export function validateDraft(value:unknown):DraftInput {
  const out=d as unknown as DraftInput;
  if(!out.title.trim()||out.title.length>160) throw new Error("Title is required and must be 160 characters or fewer.");
  if(!safeSlug(out.slug)) throw new Error("Slug must use lowercase letters, numbers and single hyphens.");
- if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(out.date)||Number.isNaN(Date.parse(out.date+"T12:00:00Z"))) throw new Error("Date must use YYYY-MM-DD.");
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(out.date)||Number.isNaN(Date.parse(out.date+"T12:00:00Z"))) throw new Error("Date must use YYYY-MM-DD.");
  if(!out.description.trim()||out.description.length>320) throw new Error("Description is required and must be 320 characters or fewer.");
  if(out.body.length>100000) throw new Error("Article body is too large (100 KB maximum).");
  if(out.type==="devlog"&&(!out.game||!safeSlug(out.game))) throw new Error("Devlogs need a game slug such as caravan-park-tycoon.");
@@ -42,7 +42,7 @@ function frontmatter(d:DraftInput){
  if(d.coverImage) fields.push(`coverImage: ${quote(d.coverImage)}`);
  if(d.coverAlt) fields.push(`coverAlt: ${quote(d.coverAlt)}`);
  if(d.type==="devlog") fields.push(`game: ${quote(d.game!)}`);
- return `---\\n${fields.join("\\n")}\\n---\\n\\n${d.body.trim()}\\n`;
+ return `---\n${fields.join("\n")}\n---\n\n${d.body.trim()}\n`;
 }
 async function getSha(path:string,env:Env):Promise<string|undefined>{
  const r=await fetch(`${API}/contents/${path.split("/").map(encodeURIComponent).join("/")}?ref=${encodeURIComponent(branch(env))}`,{headers:headers(env)});
@@ -54,14 +54,14 @@ export async function listDrafts(env:Env){
  const response=await request(`${API}/git/trees/${encodeURIComponent(branch(env))}?recursive=1`,env);
  const tree=await response.json() as {tree?:{path:string;type:string}[];truncated?:boolean};
  if(tree.truncated) throw new Error("Repository listing was truncated; refusing an incomplete draft list.");
- const paths=(tree.tree||[]).filter(x=>x.type==="blob"&&/^src\\/content\\/(blog|news|games\\/.+\\/devlogs)\\/.+\\.md$/.test(x.path));
+ const paths=(tree.tree||[]).filter(x=>x.type==="blob"&&/^src\/content\/(blog|news|games\/.+\/devlogs)\/.+\.md$/.test(x.path));
  const results=await Promise.all(paths.map(async item=>{
    const r=await request(`${API}/contents/${item.path.split("/").map(encodeURIComponent).join("/")}?ref=${encodeURIComponent(branch(env))}`,env);
    const f=await r.json() as {content:string;encoding:string;sha:string};
-   const raw=new TextDecoder().decode(Uint8Array.from(atob(f.content.replace(/\\s/g,"")) ,c=>c.charCodeAt(0)));
-   const fm=raw.match(/^---\\r?\\n([\\s\\S]*?)\\r?\\n---\\r?\\n([\\s\\S]*)$/);
+   const raw=new TextDecoder().decode(Uint8Array.from(atob(f.content.replace(/\s/g,"")) ,c=>c.charCodeAt(0)));
+   const fm=raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
    const meta=fm?.[1]||"";
-   const val=(key:string)=>meta.match(new RegExp("^"+key+":\\s*(.*)$","m"))?.[1]?.replace(/^["']|["']$/g,"")||"";
+   const val=(key:string)=>meta.match(new RegExp("^"+key+":\s*(.*)$","m"))?.[1]?.replace(/^["']|["']$/g,"")||"";
    const isDraft=val("draft")!=="false";
    return {path:item.path,sha:f.sha,title:val("title")||item.path.split("/").pop()!,date:val("pubDate"),description:val("description"),draft:isDraft,body:fm?.[2]||"",type:item.path.includes("/devlogs/")?"devlog":item.path.startsWith("src/content/news/")?"studio":"blog"};
  }));
@@ -82,8 +82,8 @@ export async function uploadAsset(env:Env,slug:string,fileName:string,mimeType:s
  if(!allowed[ext]||allowed[ext]!==mimeType) throw new Error("Only JPEG, PNG, WebP, GIF and AVIF images are supported.");
  if(!/^[a-zA-Z0-9][a-zA-Z0-9._ -]{0,99}$/.test(fileName)||fileName.includes("..")) throw new Error("Use a simple image filename.");
  if(!/^[A-Za-z0-9+/]+={0,2}$/.test(base64)||base64.length>7_000_000) throw new Error("Image is invalid or too large (5 MB maximum).");
- const path=`public/uploads/${slug}/${fileName.replace(/\\s+/g,"-")}`;
+ const path=`public/uploads/${slug}/${fileName.replace(/\s+/g,"-")}`;
  if(await getSha(path,env)) throw new Error("That image filename already exists; rename the image and try again.");
  await request(`${API}/contents/${path.split("/").map(encodeURIComponent).join("/")}`,env,{method:"PUT",body:JSON.stringify({message:`Add editorial image for ${slug}`,content:base64,branch:branch(env)})});
- return {path,url:"/uploads/"+slug+"/"+fileName.replace(/\\s+/g,"-")};
+ return {path,url:"/uploads/"+slug+"/"+fileName.replace(/\s+/g,"-")};
 }
